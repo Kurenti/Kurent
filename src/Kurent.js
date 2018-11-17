@@ -4,6 +4,7 @@
 ////////////////////////////////////
 
 var GAME;
+var CANVAS;
 
 function start() {
 	

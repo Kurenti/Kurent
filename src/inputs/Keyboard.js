@@ -17,6 +17,16 @@ function Keyboard() {
     this.pause = false;
 }
 
+Keyboard.prototype.addListener = function() {
+    document.onkeyup = this.handleKeyUp;
+    document.onkeydown = this.handleKeyDown;
+};
+
+Keyboard.prototype.removeListener = function() {
+    document.onkeyup = null;
+    document.onokeydown = null;
+};
+
 Keyboard.prototype.handleKeyDown = function(event) {
     // Shranimo pritisnjeno tipko.
     this.currentlyPressedKeys[event.keyCode] = true;

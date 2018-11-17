@@ -4,17 +4,18 @@
 ////////////////////////////////////////
 
 function Game() {
+    this.canvas = document.getElementById("canvas");
+    this.initWebGl();
 
     // Gamestate-i:
     this.gameStates = {
-        Menu: new GameState_Menu,
-        Playing: new GameState_Playing,
-        Exiting: new GameState_Exiting
+        startMenu: new GameState_Menu(this.canvas),
+        playing: new GameState_Playing,
+        exiting: new GameState_Exiting
     };
-    this.currentGameState = this.gameStates.Menu;
+    this.currentGameState = this.gameStates.startMenu;
     this.currentGameState.call();
     this.newGameState = this.currentGameState;
-    this.controls = new Keyboard();
 
     this.canvas = null;
     this.gl = null;
@@ -25,18 +26,11 @@ function Game() {
 
 Game.prototype.start = function () {
 
-    this.canvas = document.getElementById("canvas");
-    this.initWebGl();
-
     if (this.gl) {
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);                     // Set clear color to black, fully opaque
         this.gl.clearDepth(1.0);                                    // Clear everything
         this.gl.enable(this.gl.DEPTH_TEST);                         // Enable depth testing
         this.gl.depthFunc(this.gl.LEQUAL);                          // Near things obscure far things
-
-        // Set event based functions that detect key presses and releases
-        document.onkeydown = this.controls.handleKeyDown.bind(this.controls);
-        document.onkeyup = this.controls.handleKeyUp.bind(this.controls);
 
         this.resetTime();
 
@@ -44,7 +38,7 @@ Game.prototype.start = function () {
         setInterval(function () {
             this.gameLoop();
             this.setGameState();
-        }.bind(this), 15);
+        }.bind(this), 1000);
     }
 
 };
