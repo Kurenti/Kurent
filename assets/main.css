@@ -1,0 +1,16 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+#mainCanvas {
+    border: 1px solid black;
+}
+
+#container {
+    margin: auto;
+    max-width: 1240px;
+}
+
+.title {
+    text-align: center;
+}
