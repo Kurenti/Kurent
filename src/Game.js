@@ -44,40 +44,40 @@ Game.prototype.gameLoop = function () {
 
 	this.currentGameState.update(elapsedTime);
 	this.currentGameState.draw();
-}
+};
 
 Game.prototype.resetTime = function () {
 	var oldTime = this.lastTime;
 	this.lastTime = performance.now();
 
 	return this.lastTime - oldTime;
-}
+};
 
 // Funkcije za prehajanje med fazami igrce - prehod je izveden sele
 // ob koncu gameloopa
 Game.prototype.toMenu = function () {
 	this.newGameState = this.gameStates.Menu;
-}
+};
 Game.prototype.toPlaying = function () {
 	this.newGameState = this.gameStates.Playing;
-}
+};
 Game.prototype.toExiting = function () {
 	this.newGameState = this.gameStates.Exiting;
-}
+};
 
 Game.prototype.setGameState = function () {
-	if (this.newGameState != this.currentGameState) {
+	if (this.newGameState !== this.currentGameState) {
 			
 		this.currentGameState = this.newGameState;
 
 		this.currentGameState.call();
 	}
-}
+};
 
 Game.prototype.isExiting = function () {
-	if (this.currentGameState.getGameStateType() == getGameStateType.Exiting) {
+	if (this.currentGameState.getGameStateType() === getGameStateType.Exiting) {
 		return true;
 	}
 	//
 	return true;
-}
+};

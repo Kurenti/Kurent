@@ -10,12 +10,12 @@ GameState_Menu.prototype = new GameState(GameStateTtype.Menu);
 
 GameState_Menu.prototype.call = function () {
 
-}
+};
 
 GameState_Menu.prototype.update = function (elapsedTime) {
 	// Iskanje klika na gumbe
-}
+};
 
 GameState_Menu.prototype.draw = function () {
 
-}
+};

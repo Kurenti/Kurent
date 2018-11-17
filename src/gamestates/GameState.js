@@ -18,4 +18,4 @@ function GameState(type) {
 
 GameState.prototype.getGameStateType = function () {
 	return this.myGameStateType;
-}
+};
