@@ -1,6 +1,6 @@
 ////////////////////////////////////////
 // Game.js______________________________
-// Osnovni class, ki poganja celo igrico
+// Osnovni class, ki poganja celotno igro.
 ////////////////////////////////////////
 
 function Game() {
@@ -14,6 +14,7 @@ function Game() {
 	this.currentGameState = this.gameStates.Menu;
 	this.currentGameState.call();
 	this.newGameState = this.currentGameState;
+	this.controls = new Keyboard();
 
 	// Game clock
 	this.lastTime = 0.0;
@@ -21,24 +22,23 @@ function Game() {
 
 Game.prototype.start = function() {
 
+    // Set event based functions that detect key presses and releases
+    document.onkeydown = this.controls.handleKeyDown.bind(this.controls);
+    document.onkeyup = this.controls.handleKeyUp.bind(this.controls);
+
 	this.resetTime();
 
-	while (!this.isExiting()) {
-
-		// clear canvas
-
-		this.gameLoop();
-
-		// draw canvas
-
-		this.setGameState();
-
-	}
-}
+	// Set time interval of executing of the function (set fps)
+	setInterval(function() {
+        this.gameLoop();
+        this.setGameState();
+    }.bind(this), 15);
+};
 
 Game.prototype.gameLoop = function () {
 
-	// poll events (controlls)
+    // Preberi pritisnjene gumbe in popravi ustrezne vrednosti
+	this.controls.handleKeys();
 
 	var elapsedTime = this.resetTime();
 
@@ -53,14 +53,16 @@ Game.prototype.resetTime = function () {
 	return this.lastTime - oldTime;
 };
 
-// Funkcije za prehajanje med fazami igrce - prehod je izveden sele
+// Funkcije za prehajanje med fazami igre - prehod je izveden sele
 // ob koncu gameloopa
 Game.prototype.toMenu = function () {
 	this.newGameState = this.gameStates.Menu;
 };
+
 Game.prototype.toPlaying = function () {
 	this.newGameState = this.gameStates.Playing;
 };
+
 Game.prototype.toExiting = function () {
 	this.newGameState = this.gameStates.Exiting;
 };
@@ -78,6 +80,5 @@ Game.prototype.isExiting = function () {
 	if (this.currentGameState.getGameStateType() === getGameStateType.Exiting) {
 		return true;
 	}
-	//
 	return true;
 };

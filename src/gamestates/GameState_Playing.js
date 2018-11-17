@@ -6,6 +6,7 @@
 
 function GameState_Playing () {
 }
+
 GameState_Playing.prototype = new GameState(GameStateTtype.Playing);
 
 GameState_Playing.prototype.call = function () {
