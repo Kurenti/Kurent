@@ -13,7 +13,7 @@ function Game() {
         playing: new GameState_Playing,
         exiting: new GameState_Exiting
     };
-    this.currentGameState = this.gameStates.startMenu;
+    this.currentGameState = this.gameStates.playing;
     this.currentGameState.call();
     this.newGameState = this.currentGameState;
 
@@ -22,6 +22,8 @@ function Game() {
 }
 
 Game.prototype.start = function () {
+
+    this.testCube = new DevCube();
 
     if (GRAPHICS.initSuccess) {
 
@@ -37,19 +39,14 @@ Game.prototype.start = function () {
 };
 
 Game.prototype.gameLoop = function () {
-    // Namesto this. se tu uporablja GAME. - tako zaradi delovanja
-    // requestAnimFrame funkcije, njena rekurzija ne deluje z this.
-    // Vseeno naj bo gameLoop metoda objekta GAME.
     
     // Preberi pritisnjene gumbe in popravi ustrezne vrednosti
     //GAME.controls.handleKeys();  zacasno zakomentiral, dokler GAME nima controls
 
-    var elapsedTime = GAME.resetTime();
-
-    GRAPHICS.drawScene();
+    var elapsedTime = this.resetTime();
 
     //GAME.currentGameState.update(elapsedTime);
-    //GAME.currentGameState.draw();
+    GAME.currentGameState.draw();
 };
 
 Game.prototype.resetTime = function () {

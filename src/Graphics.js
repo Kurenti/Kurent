@@ -18,7 +18,7 @@ function Graphics() {
 	this.canvas = document.getElementById("canvas");
     this.initWebGl();
     this.initShaders();
-    this.initBuffers();
+    //this.initBuffers();
 
     if (this.gl) {
 	    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);                     // Set clear color to black, fully opaque
@@ -29,6 +29,9 @@ function Graphics() {
 	    this.initSuccess = true;
 	}
 }
+
+// Functions that set up the WebGL environment
+//////////////////////////////////////////////
 
 // Funkcija, ki iz canvasa inicializira webgl
 Graphics.prototype.initWebGl = function () {
@@ -107,6 +110,9 @@ Graphics.prototype.initShaders = function () {
     this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
 };
 
+// Utility functions used in drawing objects
+////////////////////////////////////////////
+
 Graphics.prototype.mvPushMatrix = function () {
     var copy = mat4.create();
     mat4.copy(copy, this.mvMatrix);
@@ -125,197 +131,93 @@ Graphics.prototype.setMatrixUniforms = function () {
     this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
 };
 
-Graphics.prototype.drawScene = function () {
+// Function that at the start of each frame sets ups the canvas
+// and prepares this class to draw game objects 
+Graphics.prototype.setUpDraw = function () {
+
+	// clear canvas
     this.gl.viewport(0, 0, this.gl.viewportWidth, this.gl.viewportHeight);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    // Update: mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix); mat4.perspective() API has changed.
+    // Move to camera class when implemented?
     mat4.perspective (this.pMatrix, 45.0, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 100.0);
 
+    //Create the mv matrix to be tossed and turned during drawing of all the objects
     mat4.identity(this.mvMatrix);
-
-    // Update: mat4.translate(mvMatrix, [-1.5, 0.0, -8.0]); mat4.translate() API has changed to mat4.translate(out, a, v)
-    // where out is the receiving matrix, a is the matrix to translate, and v is the vector to translate by. z altered to
-    // approximate original scene.
-    mat4.translate(this.mvMatrix, this.mvMatrix, [-1.5, 0.0, -6.0]);
-
-    this.mvPushMatrix();
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
-    this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, pyramidVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
-    this.gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, pyramidVertexColorBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
-
-    this.setMatrixUniforms();
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, pyramidVertexPositionBuffer.numItems);
-
-    this.mvPopMatrix();
-
-
-    mat4.translate(this.mvMatrix, this.mvMatrix, [3.0, 0.0, 0.0]);
-
-    this.mvPushMatrix();
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-    this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, cubeVertexColorBuffer);
-    this.gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
-
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-    this.setMatrixUniforms();
-    this.gl.drawElements(this.gl.TRIANGLES, cubeVertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
-
-    this.mvPopMatrix();
-
 };
 
+// Functions used by visible game objects
+/////////////////////////////////////////
 
+// Function that initializes a visble objects GL graphics data
+Graphics.prototype.loadObjectVertices = function (object) {
 
-///////////////////////////////////////////////////////
-// Following stuff is all to be implemented in a game
-// object class of some sort, here for testing purposes
-// while just mostly copying stuff from exercises
-///////////////////////////////////////////////////////
+	// Vertices
+	object.vertexPositionBuffer = this.gl.createBuffer();
+	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
+	this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.vertices), this.gl.STATIC_DRAW);
+    object.vertexPositionBuffer.itemSize = 3;
+    object.vertexPositionBuffer.numItems = object.nVertices;
 
-var pyramidVertexPositionBuffer;
-var pyramidVertexColorBuffer;
-var cubeVertexPositionBuffer;
-var cubeVertexColorBuffer;
-var cubeVertexIndexBuffer;
+    // Colours
+    object.vertexColorBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexColorBuffer);
 
-Graphics.prototype.initBuffers = function () {
-    pyramidVertexPositionBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
-    var vertices = [
-        // Front face
-         0.0,  1.0,  0.0,
-        -1.0, -1.0,  1.0,
-         1.0, -1.0,  1.0,
-
-        // Right face
-         0.0,  1.0,  0.0,
-         1.0, -1.0,  1.0,
-         1.0, -1.0, -1.0,
-
-        // Back face
-         0.0,  1.0,  0.0,
-         1.0, -1.0, -1.0,
-        -1.0, -1.0, -1.0,
-
-        // Left face
-         0.0,  1.0,  0.0,
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0,  1.0
-    ];
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
-    pyramidVertexPositionBuffer.itemSize = 3;
-    pyramidVertexPositionBuffer.numItems = 12;
-
-    pyramidVertexColorBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
-    var colors = [
-        // Front face
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
-
-        // Right face
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-
-        // Back face
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
-
-        // Left face
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
-        0.0, 1.0, 0.0, 1.0
-    ];
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
-    pyramidVertexColorBuffer.itemSize = 4;
-    pyramidVertexColorBuffer.numItems = 12;
-
-
-    cubeVertexPositionBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-    vertices = [
-        // Front face
-        -1.0, -1.0,  1.0,
-         1.0, -1.0,  1.0,
-         1.0,  1.0,  1.0,
-        -1.0,  1.0,  1.0,
-
-        // Back face
-        -1.0, -1.0, -1.0,
-        -1.0,  1.0, -1.0,
-         1.0,  1.0, -1.0,
-         1.0, -1.0, -1.0,
-
-        // Top face
-        -1.0,  1.0, -1.0,
-        -1.0,  1.0,  1.0,
-         1.0,  1.0,  1.0,
-         1.0,  1.0, -1.0,
-
-        // Bottom face
-        -1.0, -1.0, -1.0,
-         1.0, -1.0, -1.0,
-         1.0, -1.0,  1.0,
-        -1.0, -1.0,  1.0,
-
-        // Right face
-         1.0, -1.0, -1.0,
-         1.0,  1.0, -1.0,
-         1.0,  1.0,  1.0,
-         1.0, -1.0,  1.0,
-
-        // Left face
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0,  1.0,
-        -1.0,  1.0,  1.0,
-        -1.0,  1.0, -1.0
-    ];
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
-    cubeVertexPositionBuffer.itemSize = 3;
-    cubeVertexPositionBuffer.numItems = 24;
-
-    cubeVertexColorBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, cubeVertexColorBuffer);
-    colors = [
-        [1.0, 0.0, 0.0, 1.0], // Front face
-        [1.0, 1.0, 0.0, 1.0], // Back face
-        [0.0, 1.0, 0.0, 1.0], // Top face
-        [1.0, 0.5, 0.5, 1.0], // Bottom face
-        [1.0, 0.0, 1.0, 1.0], // Right face
-        [0.0, 0.0, 1.0, 1.0]  // Left face
-    ];
     var unpackedColors = [];
-    for (var i in colors) {
-        var color = colors[i];
+    for (var i in object.colors) {
+        var color = object.colors[i];
         for (var j=0; j < 4; j++) {
             unpackedColors = unpackedColors.concat(color);
         }
     }
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(unpackedColors), this.gl.STATIC_DRAW);
-    cubeVertexColorBuffer.itemSize = 4;
-    cubeVertexColorBuffer.numItems = 24;
+    object.vertexColorBuffer.itemSize = 4;
+    object.vertexColorBuffer.numItems = object.nVertices;
 
-    cubeVertexIndexBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-    var cubeVertexIndices = [
-        0, 1, 2,      0, 2, 3,    // Front face
-        4, 5, 6,      4, 6, 7,    // Back face
-        8, 9, 10,     8, 10, 11,  // Top face
-        12, 13, 14,   12, 14, 15, // Bottom face
-        16, 17, 18,   16, 18, 19, // Right face
-        20, 21, 22,   20, 22, 23  // Left face
-    ];
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), this.gl.STATIC_DRAW);
-    cubeVertexIndexBuffer.itemSize = 1;
-    cubeVertexIndexBuffer.numItems = 36;
-};
+    // Vertex indices
+    object.vertexIndexBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
+    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(object.vertexIndices), this.gl.STATIC_DRAW);
+    object.vertexIndexBuffer.itemSize = 1;
+    object.vertexIndexBuffer.numItems = object.nVertexIndices;
+}
+
+// Function that lets a visible object draw itself
+Graphics.prototype.drawObject = function (vertexPositionBuffer,
+										  vertexColorBuffer,
+										  vertexIndexBuffer,
+										  position,
+										  rotation) {
+
+	// Move
+	mat4.translate(this.mvMatrix, this.mvMatrix, position);
+
+    this.mvPushMatrix();
+
+    // Rotate
+    mat4.rotate(this.mvMatrix, this.mvMatrix, degToRad(rotation), [0.0, 1.0, 0.0]);
+
+    // Scale?
+    //implement if needed//
+
+    // Vertex positions
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexPositionBuffer);
+    this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+
+    // vertex colors - this needs to be upgraded to textures
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexColorBuffer);
+    this.gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, vertexColorBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+
+    // Faces
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
+    this.setMatrixUniforms();
+    this.gl.drawElements(this.gl.TRIANGLES, vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
+
+    // Normals
+    //TODO//
+
+    this.mvPopMatrix();
+
+    // Move back to origin
+    mat4.translate(this.mvMatrix, this.mvMatrix, -1.0*position);
+}
