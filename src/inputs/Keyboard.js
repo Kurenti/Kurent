@@ -18,8 +18,8 @@ function Keyboard() {
 }
 
 Keyboard.prototype.addListener = function() {
-    document.onkeyup = this.handleKeyUp;
-    document.onkeydown = this.handleKeyDown;
+    document.onkeyup = this.handleKeyUp.bind(this);
+    document.onkeydown = this.handleKeyDown.bind(this);
 };
 
 Keyboard.prototype.removeListener = function() {
@@ -45,19 +45,22 @@ Keyboard.prototype.handleKeys = function() {
     // W - move forward
     if (this.currentlyPressedKeys[87]) {
         this.speed = 1;
-        // S - move backward
+    // S - move backward
     } else if (this.currentlyPressedKeys[83]) {
         this.speed = -1;
     } else {
         this.speed = 0;
     }
-    // A - look left
+    // A - turn left
     if (this.currentlyPressedKeys[65]) {
-        this.yRotation -= 1;
-    // D - move right
+        this.yRotation = 1;
+    // D - turn right
     } else if (this.currentlyPressedKeys[68]) {
-        this.yRotation += 1;
+        this.yRotation = -1;
+    } else {
+        this.yRotation = 0;
     }
+
     // H - attack 1
     if (this.currentlyPressedKeys[72]) {
         this.attack = 1;

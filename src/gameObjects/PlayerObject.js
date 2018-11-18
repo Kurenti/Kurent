@@ -1,23 +1,39 @@
-/////////////////////////////////////
-// DevCube.js________________________
-// A simple cube for testing purposes
-/////////////////////////////////////
+//////////////////////////////
+// PlayerObject.js____________
+// A contollable player object
+//////////////////////////////
 
-function DevCube () {
+function PlayerObject (controls) {
+	this.controls = controls;
 
 	this.loadVertices();
 
-	this.setPosition([Math.random() * 11 - 5, Math.random() * 7 - 3, -10.0]);
-    this.setYaw(45.0);
-    this.setSpeed(0.5);
-    this.setAngle(90.0);
-    this.setAngularSpeed(Math.random() * 61 - 30);
-
-    this.moving = Math.round(Math.random());
+	this.setPosition([0.0, 0.0, -10.0]);
+	this.setAngle(180.0);
+	this.setYaw(180.0);
+    this.setSpeed(1.0);
+    this.setAngularSpeed(30.0);
 }
-DevCube.prototype = new MovableObject();
+PlayerObject.prototype = new MovableObject();
 
-DevCube.prototype.loadVertices = function () {
+PlayerObject.prototype.update = function (elapsedTime) {
+
+	this.control(elapsedTime);
+	
+	// Gameplay stuff
+};
+
+PlayerObject.prototype.control = function (elapsedTime) {
+
+	this.moveInDirection(elapsedTime,
+						 this.controls.yRotation,
+						 this.controls.speed);
+
+	// Other controlls follow here
+};
+
+// This is bound to change
+PlayerObject.prototype.loadVertices = function () {
 	
 	this.vertices = [
         // Front face
@@ -77,15 +93,4 @@ DevCube.prototype.loadVertices = function () {
 	this.nVertexIndices = 36;
 
     GRAPHICS.loadObjectVertices(this);
-};
-
-DevCube.prototype.update = function (elapsedTime) {
-
-    if (this.moving) {
-        this.moveInDirection(elapsedTime, 1, 1);
-    }
-    else {
-        this.rotateYaw(this.angularSpeed * elapsedTime / 1000);
-    }
-
 };

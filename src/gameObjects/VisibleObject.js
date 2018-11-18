@@ -17,7 +17,7 @@ function VisibleObject() {
 	this.vertexIndexBuffer;
 
 	this.position = [0.0, 0.0, 0.0];
-	this.rotation = 0.0;
+	this.yaw = 0.0;
 	// currently only rotation about vertical axis, implement other as necessary
 
 }
@@ -26,32 +26,32 @@ VisibleObject.prototype.setPosition = function (newPosition) {
 	this.position = newPosition;
 };
 
-VisibleObject.prototype.setRotation = function (newAngle) {
-	this.rotation = newAngle;
+VisibleObject.prototype.setYaw = function (newAngle) {
+	this.yaw = newAngle;
 };
 
-VisibleObject.prototype.move = function (moveVector) {
+VisibleObject.prototype.moveForVector = function (moveVector) {
 	// this is useless, TODO: use some kind of sleek and slim 3D vector
 	for (var i = 0; i < 3; i++) {
 		this.position[i] += moveVector[i];
 	}
 };
 
-VisibleObject.prototype.rotate = function (angle) {
-	this.rotation += angle;
+VisibleObject.prototype.rotateYaw = function (angle) {
+	this.yaw += angle;
+    this.yaw = this.yaw % 360.0;
 };
 
 VisibleObject.prototype.getPosition = function () {
 	return this.position;
 };
 
-VisibleObject.prototype.getRotation = function () {
-	return this.rotation;
+VisibleObject.prototype.getYaw = function () {
+	return this.yaw;
 };
 
 VisibleObject.prototype.update = function (elapsedTime) {
 	// To be overriden in children
-	console.log("parent");
 };
 
 VisibleObject.prototype.draw = function (elapsedTime) {
@@ -59,5 +59,5 @@ VisibleObject.prototype.draw = function (elapsedTime) {
 						this.vertexColorBuffer,
 						this.vertexIndexBuffer,
 						this.position,
-						this.rotation);
+						this.yaw);
 };

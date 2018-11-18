@@ -184,7 +184,7 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
 										  vertexColorBuffer,
 										  vertexIndexBuffer,
 										  position,
-										  rotation) {
+										  yaw) {
 
 	// Init to origin
     mat4.identity(this.mvMatrix);
@@ -195,7 +195,7 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
     this.mvPushMatrix();
 
     // Rotate
-    mat4.rotate(this.mvMatrix, this.mvMatrix, degToRad(rotation), [0.0, 1.0, 0.0]);
+    mat4.rotate(this.mvMatrix, this.mvMatrix, degToRad(yaw), [0.0, 1.0, 0.0]);
 
     // Scale?
     //implement if needed//

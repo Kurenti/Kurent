@@ -40,7 +40,7 @@ Game.prototype.start = function () {
 Game.prototype.gameLoop = function () {
     
     // Preberi pritisnjene gumbe in popravi ustrezne vrednosti
-    //this.controls.handleKeys();  zacasno zakomentiral, dokler GAME nima controls
+    //this.controls.handleKeys(); premaknjeno v GameState_Playing?
 
     var elapsedTime = this.resetTime();
 
