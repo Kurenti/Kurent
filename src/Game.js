@@ -6,6 +6,7 @@
 function Game() {
 
     GRAPHICS = new Graphics;
+    GAME_OBJECT_MANAGER = new GameObjectManager;
 
     // Gamestate-i:
     this.gameStates = {
@@ -23,7 +24,8 @@ function Game() {
 
 Game.prototype.start = function () {
 
-    this.testCube = new DevCube();
+    this.cube1 = new DevCube();
+    this.cube2 = new DevCube();
 
     if (GRAPHICS.initSuccess) {
 
@@ -33,7 +35,7 @@ Game.prototype.start = function () {
         setInterval(function () {
             this.gameLoop();
             this.setGameState();
-        }.bind(this), 1000);
+        }.bind(this), 16);
     }
 
 };
@@ -45,7 +47,7 @@ Game.prototype.gameLoop = function () {
 
     var elapsedTime = this.resetTime();
 
-    //GAME.currentGameState.update(elapsedTime);
+    GAME.currentGameState.update(elapsedTime);
     GAME.currentGameState.draw();
 };
 

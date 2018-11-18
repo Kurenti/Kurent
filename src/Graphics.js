@@ -141,9 +141,6 @@ Graphics.prototype.setUpDraw = function () {
 
     // Move to camera class when implemented?
     mat4.perspective (this.pMatrix, 45.0, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 100.0);
-
-    //Create the mv matrix to be tossed and turned during drawing of all the objects
-    mat4.identity(this.mvMatrix);
 };
 
 // Functions used by visible game objects
@@ -189,6 +186,9 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
 										  position,
 										  rotation) {
 
+	// Init to origin
+    mat4.identity(this.mvMatrix);
+
 	// Move
 	mat4.translate(this.mvMatrix, this.mvMatrix, position);
 
@@ -217,7 +217,4 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
     //TODO//
 
     this.mvPopMatrix();
-
-    // Move back to origin
-    mat4.translate(this.mvMatrix, this.mvMatrix, -1.0*position);
 }

@@ -7,8 +7,9 @@ function DevCube () {
 
 	this.loadVertices();
 
-	this.position = [0.0, 0.0, -10.0];
+	this.position = [Math.random() * 11 - 5, Math.random() * 7 - 3, -10.0];
     this.rotation = 45.0;
+    this.angularSpeed = Math.random() * 41 - 20; //deg/sec
 	
 }
 DevCube.prototype = new VisibleObject();
@@ -73,4 +74,11 @@ DevCube.prototype.loadVertices = function () {
 	this.nVertexIndices = 36;
 
     GRAPHICS.loadObjectVertices(this);
-}
+};
+
+DevCube.prototype.update = function (elapsedTime) {
+
+    this.rotation += this.angularSpeed * elapsedTime / 1000;
+
+    this.rotation = this.rotation % 360.0;
+};

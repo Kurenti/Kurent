@@ -51,6 +51,7 @@ VisibleObject.prototype.getRotation = function () {
 
 VisibleObject.prototype.update = function (elapsedTime) {
 	// To be overriden in children
+	console.log("parent");
 };
 
 VisibleObject.prototype.draw = function (elapsedTime) {
