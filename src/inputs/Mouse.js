@@ -5,7 +5,7 @@
 ///////////////////////////////////////////
 
 function Mouse(canvas) {
-    this.canvas = canvas;
+    this.canvas = GRAPHICS.canvas;
     this.pressed = false;
     this.lastX = 0;
     this.lastY = 0;
