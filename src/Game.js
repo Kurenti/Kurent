@@ -24,9 +24,6 @@ function Game() {
 
 Game.prototype.start = function () {
 
-    this.cube1 = new DevCube();
-    this.cube2 = new DevCube();
-
     if (GRAPHICS.initSuccess) {
 
         this.resetTime();
@@ -43,12 +40,12 @@ Game.prototype.start = function () {
 Game.prototype.gameLoop = function () {
     
     // Preberi pritisnjene gumbe in popravi ustrezne vrednosti
-    //GAME.controls.handleKeys();  zacasno zakomentiral, dokler GAME nima controls
+    //this.controls.handleKeys();  zacasno zakomentiral, dokler GAME nima controls
 
     var elapsedTime = this.resetTime();
 
-    GAME.currentGameState.update(elapsedTime);
-    GAME.currentGameState.draw();
+    this.currentGameState.update(elapsedTime);
+    this.currentGameState.draw();
 };
 
 Game.prototype.resetTime = function () {
