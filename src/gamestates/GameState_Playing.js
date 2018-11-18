@@ -13,6 +13,8 @@ GameState_Playing.prototype.call = function () {
     // Add keyboard listener
     this.controls = new Keyboard();
     this.controls.addListener();
+
+
 };
 
 GameState_Playing.prototype.update = function (elapsedTime) {
@@ -21,6 +23,8 @@ GameState_Playing.prototype.update = function (elapsedTime) {
 
 GameState_Playing.prototype.draw = function () {
 
+	GRAPHICS.setUpDraw();
+	GAME.testCube.draw();
 };
 
 GameState_Playing.prototype.destroy = function() {
