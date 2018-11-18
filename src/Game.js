@@ -1,11 +1,11 @@
-////////////////////////////////////////
-// Game.js______________________________
+//////////////////////////////////////////
+// Game.js________________________________
 // Osnovni class, ki poganja celotno igro.
-////////////////////////////////////////
+//////////////////////////////////////////
 
 function Game() {
-    this.canvas = document.getElementById("canvas");
-    this.initWebGl();
+
+    GRAPHICS = new Graphics;
 
     // Gamestate-i:
     this.gameStates = {
@@ -17,20 +17,13 @@ function Game() {
     this.currentGameState.call();
     this.newGameState = this.currentGameState;
 
-    this.canvas = null;
-    this.gl = null;
-
     // Game clock
     this.lastTime = 0.0;
 }
 
 Game.prototype.start = function () {
 
-    if (this.gl) {
-        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);                     // Set clear color to black, fully opaque
-        this.gl.clearDepth(1.0);                                    // Clear everything
-        this.gl.enable(this.gl.DEPTH_TEST);                         // Enable depth testing
-        this.gl.depthFunc(this.gl.LEQUAL);                          // Near things obscure far things
+    if (GRAPHICS.initSuccess) {
 
         this.resetTime();
 
@@ -44,13 +37,19 @@ Game.prototype.start = function () {
 };
 
 Game.prototype.gameLoop = function () {
+    // Namesto this. se tu uporablja GAME. - tako zaradi delovanja
+    // requestAnimFrame funkcije, njena rekurzija ne deluje z this.
+    // Vseeno naj bo gameLoop metoda objekta GAME.
+    
     // Preberi pritisnjene gumbe in popravi ustrezne vrednosti
-    this.controls.handleKeys();
+    //GAME.controls.handleKeys();  zacasno zakomentiral, dokler GAME nima controls
 
-    var elapsedTime = this.resetTime();
+    var elapsedTime = GAME.resetTime();
 
-    this.currentGameState.update(elapsedTime);
-    this.currentGameState.draw();
+    GRAPHICS.drawScene();
+
+    //GAME.currentGameState.update(elapsedTime);
+    //GAME.currentGameState.draw();
 };
 
 Game.prototype.resetTime = function () {
@@ -87,21 +86,4 @@ Game.prototype.isExiting = function () {
         return true;
     }
     return true;
-};
-
-// Funkcija, ki iz canvasa inicializira webgl
-Game.prototype.initWebGl = function () {
-    try {
-        // Try to grab the standard context. If it fails, fallback to experimental.
-        this.gl = this.canvas.getContext("webgl") || this.canvas.getContext("experimental-webgl");
-        this.gl.viewportWidth = this.canvas.width;
-        this.gl.viewportHeight = this.canvas.height;
-    } catch (e) {
-        console.log(e);
-    }
-
-    // If we don't have a GL context, give up now
-    if (!this.gl) {
-        alert("Unable to initialize WebGL. Your browser may not support it.");
-    }
 };
