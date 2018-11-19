@@ -11,8 +11,8 @@ function PlayerObject (controls) {
 	this.setPosition([0.0, 0.0, -10.0]);
 	this.setAngle(180.0);
 	this.setYaw(180.0);
-    this.setSpeed(1.0);
-    this.setAngularSpeed(30.0);
+    this.setSpeed(2.0);
+    this.setAngularSpeed(60.0);
 }
 PlayerObject.prototype = new MovableObject();
 
@@ -29,7 +29,29 @@ PlayerObject.prototype.control = function (elapsedTime) {
 						 this.controls.yRotation,
 						 this.controls.speed);
 
+	this.controlCamera();
+
 	// Other controlls follow here
+};
+
+PlayerObject.prototype.controlCamera = function () {
+
+	// Set up realative position of camera and rotate around player by yaw
+	var cameraPosition = vec3.fromValues(0.0, 5.0, -8.0);
+	vec3.rotateY(cameraPosition, cameraPosition,
+				[0.0, 0.0, 0.0], degToRad(this.getYaw()));
+
+	// Move to character
+	vec3.add(cameraPosition, cameraPosition, vec3.fromValues(this.getPosition()[0],
+															 this.getPosition()[1],
+															 this.getPosition()[2]));
+	vec3.scale(cameraPosition, cameraPosition, -1);
+
+	// Set viewport
+	GRAPHICS.viewport.setPosition(cameraPosition);
+	GRAPHICS.viewport.setYaw(180.0 - this.getYaw());
+	GRAPHICS.viewport.setPitch(15.0);
+
 };
 
 // This is bound to change

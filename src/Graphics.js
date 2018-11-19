@@ -2,6 +2,8 @@
 // Graphics.js_________________________
 // V tem filu se nahaja vse potrebno za
 // prikazovanje grafike na canvasu
+// class Graphics : displaying graphics
+// class Viewport : camera data
 ///////////////////////////////////////
 
 function Graphics() {
@@ -14,6 +16,8 @@ function Graphics() {
     this.mvMatrix = mat4.create();
     this.mvMatrixStack = [];
     this.pMatrix = mat4.create();
+
+    this.viewport = new Viewport();
 
 	this.canvas = document.getElementById("canvas");
     this.initWebGl();
@@ -131,9 +135,9 @@ Graphics.prototype.setMatrixUniforms = function () {
     this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
 };
 
+Graphics.prototype.setUpDraw = function () {
 // Function that at the start of each frame sets ups the canvas
 // and prepares this class to draw game objects 
-Graphics.prototype.setUpDraw = function () {
 
 	// clear canvas
     this.gl.viewport(0, 0, this.gl.viewportWidth, this.gl.viewportHeight);
@@ -189,6 +193,13 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
 	// Init to origin
     mat4.identity(this.mvMatrix);
 
+    // Move to camera coords
+    mat4.rotate(this.mvMatrix, this.mvMatrix,
+        degToRad(this.viewport.pitch), [1, 0, 0]);
+    mat4.rotate(this.mvMatrix, this.mvMatrix,
+        degToRad(this.viewport.yaw), [0, 1, 0]);
+    mat4.translate(this.mvMatrix, this.mvMatrix, this.viewport.position);
+
 	// Move
 	mat4.translate(this.mvMatrix, this.mvMatrix, position);
 
@@ -218,3 +229,27 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
 
     this.mvPopMatrix();
 }
+
+
+
+///////////////////////
+// Viewport
+///////////////////////
+
+function Viewport () {
+    this.position = [0.0, 0.0, 0.0];
+    this.pitch = 0.0;
+    this.yaw = 0.0;
+}
+
+Viewport.prototype.setPosition = function (newPosition) {
+    this.position = newPosition;
+};
+
+Viewport.prototype.setPitch = function (newPitch) {
+    this.pitch = newPitch;
+};
+
+Viewport.prototype.setYaw = function (newYaw) {
+    this.yaw = newYaw;
+};
