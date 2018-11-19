@@ -3,17 +3,15 @@
 // A simple cube for testing purposes
 /////////////////////////////////////
 
-function DevCube () {
+function DevCube (position) {
 
 	this.loadVertices();
 
-	this.setPosition([Math.random() * 11 - 5, 0.0, -10.0]);
+	this.setPosition(position); // [Math.random() * 11 - 5, Math.random() * 7 - 3, -10.0]
     this.setYaw(45.0);
     //this.setSpeed(0.5);
-    this.setAngle(90.0);
+    this.setAngle(45.0);
     //this.setAngularSpeed(Math.random() * 61 - 30);
-
-    this.moving = Math.round(Math.random());
 }
 DevCube.prototype = new CollidableObject();
 
@@ -83,11 +81,6 @@ DevCube.prototype.loadVertices = function () {
 
 DevCube.prototype.update = function (elapsedTime) {
 
-    if (this.moving) {
-        this.moveInDirection(elapsedTime, 1, 1);
-    }
-    else {
-        this.rotateYaw(this.angularSpeed * elapsedTime / 1000);
-    }
+    this.moveInDirection(elapsedTime, 1, 1);
 
 };

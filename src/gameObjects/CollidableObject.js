@@ -11,8 +11,8 @@ function CollidableObject () {
 
 	// Array of vectors of directions in which we can not move
 	// length will be equal to number of objects we are currently
-	// colliding with
-	this.noGoVector = vec3.create();
+	// colliding with - usually 1, sometimes 2
+	this.noGoVectors = [];
 }
 CollidableObject.prototype = new MovableObject();
 
@@ -60,6 +60,9 @@ VisibleObject.prototype.findRadius = function () {
 };
 
 CollidableObject.prototype.collide = function (secondObject) {
+	// Checks for collision between two objects and adds anything
+	// they might react to in update to both (such as a noGoVector)
+	// This is where any kind of collision detection is implemented
 
 	var position1 = vec3.fromValues(this.getPosition()[0],
 									this.getPosition()[1],
@@ -69,59 +72,95 @@ CollidableObject.prototype.collide = function (secondObject) {
 									secondObject.getPosition()[2]);
 
 	// Simple sphere (2d circle actually) collision
+	///////////////////////////////////////////////
 	var diff = vec3.create();
-	vec3.sub(diff, position1, position2);
+	vec3.sub(diff, position2, position1);
 
 	// Check for sphere overlap
 	if (vec3.len(diff) < this.objRadius + secondObject.objRadius) {
 		// Update NoGoVectors for both objects
 		vec3.normalize(diff, diff);
 		secondObject.updateCollisionVector(diff);
-		this.updateCollisionVector(vec3.scale(diff, diff, -1));
+		this.updateCollisionVector(vec3.negate(diff, diff));
 	}
 };
 
 CollidableObject.prototype.updateCollisionVector = function (currentCollision) {
-	vec3.add(this.noGoVector, this.noGoVector, currentCollision);
-}
+	// Adds current collisions noGoVector to object
+	this.noGoVectors.push(currentCollision);
+};
 
-CollidableObject.prototype.collisionSafeMoveInDirection = function
-		(elapsedTime, turnDir = 0, moveDir = 0) {
+// Collision safe move
+CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
+	//This function implements collision safe movement
+	//
+	//It overloads MovableObject.move and
+	//is in its place used in MovableObject.moveInDirection
 
-	if (turnDir) {
-		this.turn(elapsedTime, turnDir);
+	var moveVector = this.makeMoveVector(elapsedTime, moveDir);
 
-		this.setYaw(this.angle);
-	}
-	if (moveDir) {
-		if (moveDir < 0) {
-			moveDir = -1;
-		}
-		else {
-			moveDir = 1;
-		}
+	// Cover all noGoVector and find which one fixes move direction most
+	// If two fix it in opposing direction, we can not move
+	var bestRestrictedMoveVector = moveVector;
+	var fixDirection = 0;
+	var bestAngle = 0.0;
+	this.noGoVectors.forEach(function (noGoVector, i, noGoVectors) {
+		//Check if move vector is forcing into the colliding object
+		if (vec3.dot(moveVector, noGoVector) > 0) {
 
-		var moveDirection = vec3.fromValues(
-			Math.sin(degToRad(this.angle)) * this.speed * elapsedTime * moveDir / 1000,
-			0,
-			Math.cos(degToRad(this.angle)) * this.speed * elapsedTime * moveDir / 1000);
-
-		if (this.noGoVector !== vec3.create() && 
-			vec3.dot(moveDirection, this.noGoVector) > 0) {
 			// Restrict movement to orthogonal to direction towards other object
-			var orthNoGoVector = vec3.fromValues(this.noGoVector[2],
-												 this.noGoVector[1],
-												 -this.noGoVector[0]);
+			var orthNoGoVector = vec3.fromValues(noGoVector[2],
+												 noGoVector[1],
+												-noGoVector[0]);
+			var restrictedMoveVector = vec3.create();
 
-			vec3.scale(moveDirection, orthNoGoVector,
-				vec3.dot(moveDirection, orthNoGoVector));
+			vec3.scale(restrictedMoveVector, orthNoGoVector,
+				vec3.dot(moveVector, orthNoGoVector));
+
+			// If we are colliding with multiple objects at the same time,
+			// only the restrictedMoveVector that fixes moveVector the most
+			// is used (or we're stuck if restrictedMoveVectors fix
+			// moveVectors in different directions (one left, one right))
+			// To check this, currently we check for vec3.angle, which is
+			// a little expensive - only use when multiple noGoVectors
+
+			if (noGoVectors.length > 1) {
+				if (fixDirection === 0) {
+
+					// First fix vector
+					fixDirection = sideOfVector(moveVector, restrictedMoveVector);
+					bestAngle = vec3.angle(moveVector, restrictedMoveVector);
+					bestRestrictedMoveVector = restrictedMoveVector;
+
+				} else {
+					if (sideOfVector(moveVector, restrictedMoveVector) !== fixDirection) {
+						// If fixDirection different than before, don't move
+						vec3.set(bestRestrictedMoveVector, 0, 0, 0);
+
+					} else {
+						var currentAngle = vec3.angle(moveVector, restrictedMoveVector);
+						if (currentAngle > bestAngle) {
+							// If current vector fixes original direction more than
+							// last best, save it as best fix
+							bestAngle = currentAngle;
+							bestRestrictedMoveVector = restrictedMoveVector;
+						}
+					}
+				}
+			} else {
+				bestRestrictedMoveVector = restrictedMoveVector;
+			}
 		}
+	});
 
-		this.moveForVector(moveDirection);
-		// / 1000 for ms -> s
-	}
-}
+	// Finally move object for vector. This is just original moveVector
+	// in case of no collision or appropriatelly fixed moveVector in
+	// case of collision
+	this.moveForVector(bestRestrictedMoveVector);
+};
 
 CollidableObject.prototype.resetCollision = function () {
-	this.noGoVector = vec3.create();
+	//Resets collision settings at the end of each frame
+	//for a collidable object
+	this.noGoVectors = [];
 };

@@ -63,9 +63,9 @@ MovableObject.prototype.turn = function (elapsedTime, direction) {
 	}
 };
 
-MovableObject.prototype.move = function (elapsedTime, direction = 1) {
-// Move object at speed
-// direction is forward / backwards
+MovableObject.prototype.makeMoveVector = function (elapsedTime, direction = 1) {
+	// Return move vector (movement in given elapsedTime at speed and angle)
+	// direction is forward / backwards
 
 	if (direction < 0) {
 		direction = -1;
@@ -74,17 +74,25 @@ MovableObject.prototype.move = function (elapsedTime, direction = 1) {
 		direction = 1;
 	}
 
-	var moveDirection = [Math.sin(degToRad(this.angle)) * this.speed * elapsedTime * direction / 1000,
-						 0,
-						 Math.cos(degToRad(this.angle)) * this.speed * elapsedTime * direction / 1000];
+	var moveVector = vec3.fromValues(
+			Math.sin(degToRad(this.angle)) * this.speed * elapsedTime * direction / 1000,
+			0,
+			Math.cos(degToRad(this.angle)) * this.speed * elapsedTime * direction / 1000);
 
-	this.moveForVector(moveDirection);
-	// / 1000 for ms -> s
+	return moveVector;
 };
 
-MovableObject.prototype.moveInDirection = function (elapsedTime, turnDir = 0, moveDir = 0) {
-// Turn objects move angle and yaw, than move in direction
-// Simplest move to use in Player and AI objects
+MovableObject.prototype.move = function (elapsedTime, direction = 1) {
+	// Move object at speed and angle
+	var moveVector = this.makeMoveVector(elapsedTime, direction);
+
+	this.moveForVector(moveVector);
+};
+
+MovableObject.prototype.moveInDirection = function
+					(elapsedTime, turnDir = 0, moveDir = 0) {
+	// Turn objects move angle and yaw, than move in direction
+	// Simplest move to use in Player and AI objects
 
 	if (turnDir) {
 		this.turn(elapsedTime, turnDir);

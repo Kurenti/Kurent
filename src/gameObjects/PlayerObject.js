@@ -8,7 +8,7 @@ function PlayerObject (controls) {
 
 	this.loadVertices();
 
-	this.setPosition([0.0, 0.0, -10.0]);
+	this.setPosition([0.0, 0.0, 0.0]);
 	this.setAngle(180.0);
 	this.setYaw(180.0);
     this.setSpeed(3.0);
@@ -25,9 +25,9 @@ PlayerObject.prototype.update = function (elapsedTime) {
 
 PlayerObject.prototype.control = function (elapsedTime) {
 
-	this.collisionSafeMoveInDirection(elapsedTime,
-									 this.controls.yRotation,
-									 this.controls.speed);
+	this.moveInDirection(elapsedTime,
+						 this.controls.yRotation,
+						 this.controls.speed);
 
 	this.controlCamera();
 
