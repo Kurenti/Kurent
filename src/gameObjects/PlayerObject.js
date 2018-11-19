@@ -11,10 +11,10 @@ function PlayerObject (controls) {
 	this.setPosition([0.0, 0.0, -10.0]);
 	this.setAngle(180.0);
 	this.setYaw(180.0);
-    this.setSpeed(2.0);
-    this.setAngularSpeed(60.0);
+    this.setSpeed(3.0);
+    this.setAngularSpeed(80.0);
 }
-PlayerObject.prototype = new MovableObject();
+PlayerObject.prototype = new CollidableObject();
 
 PlayerObject.prototype.update = function (elapsedTime) {
 
@@ -25,9 +25,9 @@ PlayerObject.prototype.update = function (elapsedTime) {
 
 PlayerObject.prototype.control = function (elapsedTime) {
 
-	this.moveInDirection(elapsedTime,
-						 this.controls.yRotation,
-						 this.controls.speed);
+	this.collisionSafeMoveInDirection(elapsedTime,
+									 this.controls.yRotation,
+									 this.controls.speed);
 
 	this.controlCamera();
 
@@ -114,5 +114,7 @@ PlayerObject.prototype.loadVertices = function () {
     ];
 	this.nVertexIndices = 36;
 
+    this.findHeight();
+    this.findRadius();
     GRAPHICS.loadObjectVertices(this);
 };

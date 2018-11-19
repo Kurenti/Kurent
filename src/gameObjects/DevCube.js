@@ -7,15 +7,15 @@ function DevCube () {
 
 	this.loadVertices();
 
-	this.setPosition([Math.random() * 11 - 5, Math.random() * 7 - 3, -10.0]);
+	this.setPosition([Math.random() * 11 - 5, 0.0, -10.0]);
     this.setYaw(45.0);
-    this.setSpeed(0.5);
+    //this.setSpeed(0.5);
     this.setAngle(90.0);
-    this.setAngularSpeed(Math.random() * 61 - 30);
+    //this.setAngularSpeed(Math.random() * 61 - 30);
 
     this.moving = Math.round(Math.random());
 }
-DevCube.prototype = new MovableObject();
+DevCube.prototype = new CollidableObject();
 
 DevCube.prototype.loadVertices = function () {
 	
@@ -76,6 +76,8 @@ DevCube.prototype.loadVertices = function () {
     ];
 	this.nVertexIndices = 36;
 
+    this.findHeight();
+    this.findRadius();
     GRAPHICS.loadObjectVertices(this);
 };
 

@@ -18,8 +18,7 @@ function VisibleObject() {
 
 	this.position = [0.0, 0.0, 0.0];
 	this.yaw = 0.0;
-	// currently only rotation about vertical axis, implement other as necessary
-
+	this.pitch = 0.0;
 }
 
 VisibleObject.prototype.setPosition = function (newPosition) {
