@@ -9,9 +9,9 @@ function DevCube (position) {
 
 	this.setPosition(position); // [Math.random() * 11 - 5, Math.random() * 7 - 3, -10.0]
     this.setYaw(45.0);
-    //this.setSpeed(0.5);
+    this.setSpeed(0.5);
     this.setAngle(45.0);
-    //this.setAngularSpeed(Math.random() * 61 - 30);
+    this.setAngularSpeed(Math.random() * 61 - 30);
 }
 DevCube.prototype = new CollidableObject();
 

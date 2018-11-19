@@ -11,8 +11,8 @@ function PlayerObject (controls) {
 	this.setPosition([0.0, 0.0, 0.0]);
 	this.setAngle(180.0);
 	this.setYaw(180.0);
-    this.setSpeed(3.0);
-    this.setAngularSpeed(80.0);
+    this.setSpeed(4.0);
+    this.setAngularSpeed(90.0);
 }
 PlayerObject.prototype = new CollidableObject();
 

@@ -78,10 +78,16 @@ CollidableObject.prototype.collide = function (secondObject) {
 
 	// Check for sphere overlap
 	if (vec3.len(diff) < this.objRadius + secondObject.objRadius) {
-		// Update NoGoVectors for both objects
+		//Only collision direction matters
 		vec3.normalize(diff, diff);
-		secondObject.updateCollisionVector(diff);
-		this.updateCollisionVector(vec3.negate(diff, diff));
+
+		//Create second vector in oposite direction for the other object
+		var diff2 = vec3.create();
+		vec3.negate(diff2, diff);
+
+		// Update NoGoVectors for both objects
+		this.updateCollisionVector(diff);
+		secondObject.updateCollisionVector(diff2);
 	}
 };
 
