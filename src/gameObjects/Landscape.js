@@ -69,16 +69,21 @@ Landscape.prototype.getHeight = function (x, z) {
 		var P3z = Math.ceil(z);
 	}
 
-	var dist1 = Math.sqrt((x - P1x)*(x - P1x) + (z - P1z)*(z - P1z));
-	var dist2 = Math.sqrt((x - P2x)*(x - P2x) + (z - P2z)*(z - P2z));
-	var dist3 = Math.sqrt((x - P3x)*(x - P3x) + (z - P3z)*(z - P3z));
-
 	var height1 = this.getPixelHeight(P1x, P1z);
 	var height2 = this.getPixelHeight(P2x, P2z);
 	var height3 = this.getPixelHeight(P3x, P3z);
 
-	return ((1.0*height1 / dist1) + (1.0*height2 / dist2) + (1.0*height3 / dist3)) /
-		   ((1.0 / dist1) + (1.0 / dist2) + (1.0 / dist3));
+	//Implementirano interpoliranje z baricentricnimi koordinatami - klasicno
+	//interpoliranje po weight = 1/dist se je izkazalo za neprimerno, clipping
+	//ob vzponih in padcih
+	var weight1 = ((P2z - P3z)*(x - P3x) + (P3x - P2x)*(z - P3z)) /
+				  ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
+	var weight2 = ((P3z - P1z)*(x - P3x) + (P1x - P3x)*(z - P3z)) /
+				  ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
+	var weight3 = 1 - weight1 - weight2;
+
+	return ((1.0*height1 * weight1) + (1.0*height2 * weight2) + (1.0*height3 * weight3)) /
+		   (weight1 + weight2 + weight3);
 };
 
 Landscape.prototype.getPixelHeight = function (x, z) {
