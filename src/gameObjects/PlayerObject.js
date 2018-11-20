@@ -8,9 +8,9 @@ function PlayerObject (controls) {
 
 	this.loadVertices();
 
-	this.setPosition([1.0, 1.0, 1.0]);
-	this.setAngle(180.0);
-	this.setYaw(180.0);
+	this.setPosition([5.0, 1.0, 3.0]);
+	this.setAngle(0.0);
+	this.setYaw(0.0);
     this.setSpeed(8.0);
     this.setAngularSpeed(100.0);
 }
@@ -42,12 +42,17 @@ PlayerObject.prototype.controlCamera = function () {
 				[0.0, 0.0, 0.0], degToRad(this.getYaw()));
 
 	// Move to character
-	vec3.add(cameraPosition, cameraPosition, vec3.fromValues(this.getPosition()[0],
-															 this.getPosition()[1],
-															 this.getPosition()[2]));
-	vec3.scale(cameraPosition, cameraPosition, -1);
+	vec3.add(cameraPosition, cameraPosition, this.getPosition());
+
+	// Move on top of terrain if camera is inside terrain
+	var landscapeCameraHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(cameraPosition[0], cameraPosition[2]);
+	var landscapePlayerHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(this.getPosition()[0], this.getPosition()[2]);
+	if (landscapeCameraHeight - landscapePlayerHeight > 5.0) {
+		cameraPosition[1] = landscapeCameraHeight + 1;
+	}
 
 	// Set viewport
+	vec3.negate(cameraPosition, cameraPosition);
 	GRAPHICS.viewport.setPosition(cameraPosition);
 	GRAPHICS.viewport.setYaw(180.0 - this.getYaw());
 	GRAPHICS.viewport.setPitch(15.0);

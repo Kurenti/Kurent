@@ -13,20 +13,52 @@ Landscape.prototype = new VisibleObject();
 
 Landscape.prototype.loadLandscape = function () {
 
+	//JSON implemented but I need to do the Webstorm thing first...
+	//
+	//var request = new XMLHttpRequest();
+	//request.open("GET", "assets/heightmap/testHeightmap.json");
+	//var onReadyFunc = function () {
+    //    if (request.readyState == 4) {
+    //    	this.handleLoadedLandscape(request.responseText);
+    //    }
+    //};
+    //request.onreadystatechange = onReadyFunc.call(this);
+	//request.send();
+
+	//Running from local (non-server) will trigger CORS, JSON.parse
+	//will fail on an empty request.responseText string with SintaxError
+	//Fallback to this shite for now...
+
+	// Load map width and depth
 	this.landscapeWidth = testHeightmapWidth;
 	this.landscapeDepth = testHeightmapDepth;
 
 	// Load vertex data
-	//TODO: this will be changed to reading a json file
 	this.vertices = testHeightmapVertices;
 	this.colors = [[0.33, 0.67, 0.26, 1.0]];
 	this.nVertices = this.vertices.length / 3;
 	this.loadVertexIndices();
 
-    GRAPHICS.loadObjectVertices(this);
+	GRAPHICS.loadObjectVertices(this);
 };
 
-Landscape.prototype.loadVertexIndices = function () {
+Landscape.prototype.handleLoadedLandscape = function (responseText) {
+	var landscapeData = JSON.parse(responseText);
+
+	// Load map width and depth
+	this.landscapeWidth = landscapeData.heightmapWidth;
+	this.landscapeDepth = landscapeData.heightmapDepth;
+
+	// Load vertex data
+	this.vertices = landscapeData.heightmapVertices;
+	this.colors = [[0.33, 0.67, 0.26, 1.0]];
+	this.nVertices = this.vertices.length / 3;
+	this.loadVertexIndices();
+
+	GRAPHICS.loadObjectVertices(this);
+};
+
+Landscape.prototype.loadVertexIndices = function (landscapeData) {
 	
 	//Walk over grid even though the this.vertices is a 1D array (and so
 	//will be this.vertexIndices)
@@ -52,9 +84,9 @@ Landscape.prototype.getHeight = function (x, z) {
 
 	if (x < 0 ||
 		z < 0 ||
-		x > this.landscapeWidth ||
+		x > this.landscapeWidth - 1 ||
 		z > this.landscapeDepth - 1) {
-		return 0;
+		return false;
 	}
 
 	var P1x = Math.floor(x);
@@ -76,6 +108,12 @@ Landscape.prototype.getHeight = function (x, z) {
 	//Implementirano interpoliranje z baricentricnimi koordinatami - klasicno
 	//interpoliranje po weight = 1/dist se je izkazalo za neprimerno, clipping
 	//ob vzponih in padcih
+
+	if (((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z)) === 0 ||
+		((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z)) === 0) {
+		return false;
+	}
+
 	var weight1 = ((P2z - P3z)*(x - P3x) + (P3x - P2x)*(z - P3z)) /
 				  ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
 	var weight2 = ((P3z - P1z)*(x - P3x) + (P1x - P3x)*(z - P3z)) /

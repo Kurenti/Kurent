@@ -61,7 +61,7 @@ VisibleObject.prototype.findRadius = function () {
 
 CollidableObject.prototype.collide = function (secondObject) {
 	// Checks for collision between two objects and adds anything
-	// they might react to in update to both (such as a noGoVector)
+	// they might react to during update to both (such as a noGoVector)
 	// This is where any kind of collision detection is implemented
 
 	var position1 = vec3.fromValues(this.getPosition()[0],
@@ -163,20 +163,32 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 		}
 	});
 
+
+	//Landscape Collision
+	/////////////////////
+	//To simulate landscape collision calculate vector from position to moved position
+	//in XZ + height difference. Then move for that vector scaled to length of original
+	//move vector in XZ
+	var movedPosition = vec3.create();
+	var moveVector = vec3.create();
+
+	vec3.add(movedPosition, this.getPosition(), bestRestrictedMoveVector);
+
+	//Moved height can return false if something fails
+	var movedHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(
+									movedPosition[0], movedPosition[2]) + this.objHeight / 2.0
+	if (movedHeight) {
+		movedPosition[1] = movedHeight;
+	}
+
+	vec3.sub(moveVector, movedPosition, this.getPosition());
+	vec3.normalize(moveVector, moveVector);
+	vec3.scale(moveVector, moveVector, vec3.len(bestRestrictedMoveVector));
+
 	// Finally move object for vector. This is just original moveVector
 	// in case of no collision or appropriatelly fixed moveVector in
 	// case of collision
-	this.moveForVector(bestRestrictedMoveVector);
-
-
-	//LandscapeCollision
-	////////////////////
-	//To simulate landscape collision just move object to landscape height + 0.5 objHeight
-	var movedPosition = this.getPosition();
-	this.setPosition([movedPosition[0],
-					  GAME_OBJECT_MANAGER.getLandscape().getHeight(
-									movedPosition[0], movedPosition[2]) + this.objHeight / 2.0,
-					  movedPosition[2]]);
+	this.moveForVector(moveVector);
 };
 
 CollidableObject.prototype.resetCollision = function () {
