@@ -6,7 +6,7 @@
 
 function CollidableObject () {
 
-	this.objWidth = 0.0;
+	this.objHeight = 0.0;
 	this.objRadius = 0.0;
 
 	// Array of vectors of directions in which we can not move
@@ -99,11 +99,15 @@ CollidableObject.prototype.updateCollisionVector = function (currentCollision) {
 // Collision safe move
 CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 	//This function implements collision safe movement
+	//It considers collision with other objects and landscape
 	//
 	//It overloads MovableObject.move and
 	//is in its place used in MovableObject.moveInDirection
 
 	var moveVector = this.makeMoveVector(elapsedTime, moveDir);
+
+	//Object collision
+	//////////////////
 
 	// Cover all noGoVector and find which one fixes move direction most
 	// If two fix it in opposing direction, we can not move
@@ -163,6 +167,16 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 	// in case of no collision or appropriatelly fixed moveVector in
 	// case of collision
 	this.moveForVector(bestRestrictedMoveVector);
+
+
+	//LandscapeCollision
+	////////////////////
+	//To simulate landscape collision just move object to landscape height + 0.5 objHeight
+	var movedPosition = this.getPosition();
+	this.setPosition([movedPosition[0],
+					  GAME_OBJECT_MANAGER.getLandscape().getHeight(
+									movedPosition[0], movedPosition[2]) + this.objHeight / 2.0,
+					  movedPosition[2]]);
 };
 
 CollidableObject.prototype.resetCollision = function () {

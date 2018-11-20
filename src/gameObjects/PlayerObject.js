@@ -8,11 +8,11 @@ function PlayerObject (controls) {
 
 	this.loadVertices();
 
-	this.setPosition([0.0, 1.0, 0.0]);
+	this.setPosition([1.0, 1.0, 1.0]);
 	this.setAngle(180.0);
 	this.setYaw(180.0);
-    this.setSpeed(4.0);
-    this.setAngularSpeed(90.0);
+    this.setSpeed(8.0);
+    this.setAngularSpeed(100.0);
 }
 PlayerObject.prototype = new CollidableObject();
 

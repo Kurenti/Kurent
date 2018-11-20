@@ -4,6 +4,9 @@
 // all in-game objects
 /////////////////////////////////////////
 
+//This will probably be changed to a few tags used when callling .add
+//Some objects are invisible (don't need to be drawn), so drawable is missing
+//here..however tey can very much be collidable.
 var ObjectTypes = {
 	Default: 1,
 	Collidable: 2,
@@ -29,9 +32,19 @@ function GameObjectManager () {
 GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) {
 	this.gameObjects.push(object);
 
-	if (type === ObjectTypes.Collidable) {
-		this.collidableObjects.push(object);
+	switch(type) {
+		case ObjectTypes.Collidable:
+			this.collidableObjects.push(object);
+			break;
+
+		case ObjectTypes.Landscape:
+			this.landscape = object;
+			break;
 	}
+};
+
+GameObjectManager.prototype.getLandscape = function () {
+	return this.landscape;
 };
 
 GameObjectManager.prototype.drawAll = function () {
