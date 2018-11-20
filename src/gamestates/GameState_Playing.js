@@ -27,8 +27,9 @@ GameState_Playing.prototype.call = function () {
     ///////////
     // provizoricen load igre - obstajati bi moral locen GameState za
     // polnjenje levla, a morda je cisto okej, ce se zaenkrat to nardi tukej
-    GAME_OBJECT_MANAGER.add(new DevCube([1.5, 0, -3]), ObjectTypes.Collidable);
-    GAME_OBJECT_MANAGER.add(new DevCube([-1.5, 0, -3]), ObjectTypes.Collidable);
+    GAME_OBJECT_MANAGER.add(new Landscape(), ObjectTypes.Landscape);
+    GAME_OBJECT_MANAGER.add(new DevCube([1.5, 1, -3]), ObjectTypes.Collidable);
+    GAME_OBJECT_MANAGER.add(new DevCube([-1.5, 1, -3]), ObjectTypes.Collidable);
     GAME_OBJECT_MANAGER.add(new PlayerObject(this.controls), ObjectTypes.Collidable);
     	// Sem zaenkrat kar pustil this.contols tu, ampak ja,
     	// GameStati naj bi bili bolj interfaci, ki naj

@@ -164,10 +164,14 @@ Graphics.prototype.loadObjectVertices = function (object) {
     object.vertexColorBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexColorBuffer);
 
+    if (object.nVertices % object.colors.length !== 0) {
+        console.log("Can't load vertex colors: colors array wrong size");
+    }
+
     var unpackedColors = [];
     for (var i in object.colors) {
         var color = object.colors[i];
-        for (var j=0; j < 4; j++) {
+        for (var j=0; j < object.nVertices / object.colors.length; j++) {
             unpackedColors = unpackedColors.concat(color);
         }
     }
