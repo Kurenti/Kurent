@@ -15,6 +15,7 @@ function VisibleObject() {
 	this.vertexPositionBuffer;
 	this.vertexColorBuffer;
 	this.vertexIndexBuffer;
+	this.vertexNormalBuffer;
 
 	this.position = [0.0, 0.0, 0.0];
 	this.yaw = 0.0;
@@ -57,6 +58,7 @@ VisibleObject.prototype.draw = function (elapsedTime) {
 	GRAPHICS.drawObject(this.vertexPositionBuffer,
 						this.vertexColorBuffer,
 						this.vertexIndexBuffer,
+						this.vertexNormalBuffer,
 						this.position,
 						this.yaw);
 };

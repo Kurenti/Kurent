@@ -37,6 +37,7 @@ Landscape.prototype.loadLandscape = function () {
 	this.vertices = testHeightmapVertices;
 	this.colors = [[0.33, 0.67, 0.26, 1.0]];
 	this.nVertices = this.vertices.length / 3;
+	this.vertexNormals = null;
 	this.loadVertexIndices();
 
 	GRAPHICS.loadObjectVertices(this);
