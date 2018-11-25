@@ -7,43 +7,12 @@ function Landscape () {
 
 	this.landscapeWidth = 0;
 	this.landscapeDepth = 0;
-	this.loadLandscape();
+	this.loadModel("assets/heightmap/testHeightmap.json");
 }
 Landscape.prototype = new VisibleObject();
 
-Landscape.prototype.loadLandscape = function () {
-
-	//JSON implemented but I need to do the Webstorm thing first...
-	//
-	//var request = new XMLHttpRequest();
-	//request.open("GET", "assets/heightmap/testHeightmap.json");
-	//var onReadyFunc = function () {
-    //    if (request.readyState == 4) {
-    //    	this.handleLoadedLandscape(request.responseText);
-    //    }
-    //};
-    //request.onreadystatechange = onReadyFunc.call(this);
-	//request.send();
-
-	//Running from local (non-server) will trigger CORS, JSON.parse
-	//will fail on an empty request.responseText string with SintaxError
-	//Fallback to this shite for now...
-
-	// Load map width and depth
-	this.landscapeWidth = testHeightmapWidth;
-	this.landscapeDepth = testHeightmapDepth;
-
-	// Load vertex data
-	this.vertices = testHeightmapVertices;
-	this.colors = [[0.33, 0.67, 0.26, 1.0]];
-	this.nVertices = this.vertices.length / 3;
-	this.loadVertexIndices();
-
-	GRAPHICS.loadObjectVertices(this);
-};
-
-Landscape.prototype.handleLoadedLandscape = function (responseText) {
-	var landscapeData = JSON.parse(responseText);
+Landscape.prototype.handleLoadedModel = function (landscapeData) {
+	//Handle data read from file - landscapeData must be an object
 
 	// Load map width and depth
 	this.landscapeWidth = landscapeData.heightmapWidth;
@@ -53,15 +22,12 @@ Landscape.prototype.handleLoadedLandscape = function (responseText) {
 	this.vertices = landscapeData.heightmapVertices;
 	this.colors = [[0.33, 0.67, 0.26, 1.0]];
 	this.nVertices = this.vertices.length / 3;
-	this.loadVertexIndices();
-
-	GRAPHICS.loadObjectVertices(this);
-};
-
-Landscape.prototype.loadVertexIndices = function (landscapeData) {
 	
+	// Calculate faces
 	//Walk over grid even though the this.vertices is a 1D array (and so
 	//will be this.vertexIndices)
+	//TODO:save this somewhere, it makes no sense to recalculate
+	//everytime (especially for higher resolution maps)
 	for (var i = 0; i < this.landscapeDepth - 1; i++) {
 		for (var j = 0; j < this.landscapeWidth - 1; j++) {
 
@@ -77,6 +43,8 @@ Landscape.prototype.loadVertexIndices = function (landscapeData) {
 			this.nVertexIndices += 6;
 		}
 	}
+
+	GRAPHICS.loadObjectVertices(this);
 };
 
 Landscape.prototype.getHeight = function (x, z) {

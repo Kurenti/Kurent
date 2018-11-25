@@ -21,6 +21,21 @@ function VisibleObject() {
 	this.pitch = 0.0;
 }
 
+VisibleObject.prototype.loadModel = function (path) {
+
+	var request = new XMLHttpRequest();
+    request.open("GET", path);
+    request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+            this.handleLoadedModel(JSON.parse(request.responseText));
+        }
+    }.bind(this);
+    request.send();
+
+	//Running from local (non-server) will trigger CORS, JSON.parse
+	//will fail on an empty request.responseText string with SintaxError
+}
+
 VisibleObject.prototype.setPosition = function (newPosition) {
 	this.position = newPosition;
 };
