@@ -22,13 +22,12 @@ function Graphics() {
 	this.canvas = document.getElementById("canvas");
     this.initWebGl();
     this.initShaders();
-    //this.initBuffers();
 
     if (this.gl) {
-	    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);                     // Set clear color to black, fully opaque
+	    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);    // Set clear color to black, fully opaque
 	    this.gl.clearDepth(1.0);                                    // Clear everything
-	    this.gl.enable(this.gl.DEPTH_TEST);                         // Enable depth testing
-	    this.gl.depthFunc(this.gl.LEQUAL);                          // Near things obscure far things
+	    this.gl.enable(this.gl.DEPTH_TEST);                                // Enable depth testing
+	    this.gl.depthFunc(this.gl.LEQUAL);                                 // Near things obscure far things
 	
 	    this.initSuccess = true;
 	}
@@ -63,16 +62,16 @@ Graphics.prototype.getShader = function (gl, id) {
     var str = "";
     var k = shaderScript.firstChild;
     while (k) {
-        if (k.nodeType == 3) {
+        if (k.nodeType === 3) {
             str += k.textContent;
         }
         k = k.nextSibling;
     }
 
     var shader;
-    if (shaderScript.type == "x-shader/x-fragment") {
+    if (shaderScript.type === "x-shader/x-fragment") {
         shader = gl.createShader(gl.FRAGMENT_SHADER);
-    } else if (shaderScript.type == "x-shader/x-vertex") {
+    } else if (shaderScript.type === "x-shader/x-vertex") {
         shader = gl.createShader(gl.VERTEX_SHADER);
     } else {
         return null;
@@ -102,16 +101,21 @@ Graphics.prototype.initShaders = function () {
         alert("Could not initialise shaders");
     }
 
-    this.gl.useProgram(this.shaderProgram);
-
     this.shaderProgram.vertexPositionAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexPosition");
     this.gl.enableVertexAttribArray(this.shaderProgram.vertexPositionAttribute);
+
+    this.shaderProgram.textureCoordAttribute = this.gl.getAttribLocation(this.shaderProgram, "aTextureCoord");
+    this.gl.enableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
 
     this.shaderProgram.vertexColorAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexColor");
     this.gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
 
     this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uPMatrix");
     this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
+    this.shaderProgram.samplerUniform = this.gl.getUniformLocation(this.shaderProgram, "uSampler");
+    this.shaderProgram.useTexturesUniform = this.gl.getUniformLocation(this.shaderProgram, "uUseTextures");
+
+    this.gl.useProgram(this.shaderProgram);
 };
 
 // Utility functions used in drawing objects
@@ -124,7 +128,7 @@ Graphics.prototype.mvPushMatrix = function () {
 };
 
 Graphics.prototype.mvPopMatrix = function () {
-    if (this.mvMatrixStack.length == 0) {
+    if (this.mvMatrixStack.length === 0) {
         throw "Invalid popMatrix!";
     }
     this.mvMatrix = this.mvMatrixStack.pop();
@@ -150,7 +154,7 @@ Graphics.prototype.setUpDraw = function () {
 // Functions used by visible game objects
 /////////////////////////////////////////
 
-// Function that initializes a visble objects GL graphics data
+// Function that initializes a visible objects GL graphics data
 Graphics.prototype.loadObjectVertices = function (object) {
 
 	// Vertices
@@ -159,6 +163,13 @@ Graphics.prototype.loadObjectVertices = function (object) {
 	this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.vertices), this.gl.STATIC_DRAW);
     object.vertexPositionBuffer.itemSize = 3;
     object.vertexPositionBuffer.numItems = object.nVertices;
+
+    // Textures
+    object.vertexTextureCoordBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexTextureCoordBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.textureCoords), this.gl.STATIC_DRAW);
+    object.vertexTextureCoordBuffer.itemSize = 2;
+    object.vertexTextureCoordBuffer.numItems = object.nVertices;
 
     // Colours
     object.vertexColorBuffer = this.gl.createBuffer();
@@ -185,14 +196,37 @@ Graphics.prototype.loadObjectVertices = function (object) {
     this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(object.vertexIndices), this.gl.STATIC_DRAW);
     object.vertexIndexBuffer.itemSize = 1;
     object.vertexIndexBuffer.numItems = object.nVertexIndices;
-}
+};
+
+// Function that loads an image to objects texture
+Graphics.prototype.loadTexture = function (object, path) {
+
+    object.texture = this.gl.createTexture();
+    object.texture.image = new Image();
+    object.texture.image.onload = function () {
+        this.handleLoadedTexture(object.texture);
+    }.bind(this);
+    object.texture.image.src = path;
+
+    object.hasTextures = true;
+};
+
+// Function that handles GL side of texture handling after the image is loaded
+Graphics.prototype.handleLoadedTexture = function (texture) {
+    this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, texture.image);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR_MIPMAP_NEAREST);
+    this.gl.generateMipmap(this.gl.TEXTURE_2D);
+
+    this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+};
 
 // Function that lets a visible object draw itself
-Graphics.prototype.drawObject = function (vertexPositionBuffer,
-										  vertexColorBuffer,
-										  vertexIndexBuffer,
-										  position,
-										  yaw) {
+Graphics.prototype.drawObject = function (object) {
+
+    this.gl.uniform1i(this.shaderProgram.useTexturesUniform, object.hasTextures);
 
 	// Init to origin
     mat4.identity(this.mvMatrix);
@@ -205,28 +239,36 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
     mat4.translate(this.mvMatrix, this.mvMatrix, this.viewport.position);
 
 	// Move
-	mat4.translate(this.mvMatrix, this.mvMatrix, position);
+	mat4.translate(this.mvMatrix, this.mvMatrix, object.getPosition());
 
     this.mvPushMatrix();
 
     // Rotate
-    mat4.rotate(this.mvMatrix, this.mvMatrix, degToRad(yaw), [0.0, 1.0, 0.0]);
+    mat4.rotate(this.mvMatrix, this.mvMatrix, degToRad(object.getYaw()), [0.0, 1.0, 0.0]);
 
     // Scale?
     //implement if needed//
 
     // Vertex positions
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexPositionBuffer);
-    this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
+    this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, object.vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
-    // vertex colors - this needs to be upgraded to textures
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexColorBuffer);
-    this.gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, vertexColorBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+    // Vertex textures
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexTextureCoordBuffer);
+    this.gl.vertexAttribPointer(this.shaderProgram.textureCoordAttribute, object.vertexTextureCoordBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+
+    this.gl.activeTexture(this.gl.TEXTURE0);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, object.texture);
+    this.gl.uniform1i(this.shaderProgram.samplerUniform, 0);
+
+    // Vertex colors
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexColorBuffer);
+    this.gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
     // Faces
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
     this.setMatrixUniforms();
-    this.gl.drawElements(this.gl.TRIANGLES, vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
+    this.gl.drawElements(this.gl.TRIANGLES, object.vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
 
     // Normals
     //TODO//

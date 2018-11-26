@@ -11,8 +11,8 @@ function Game() {
     // Gamestate-i:
     this.gameStates = {
         startMenu: new GameState_Menu(this.canvas),
-        playing: new GameState_Playing,
-        exiting: new GameState_Exiting
+        playing: new GameState_Playing(),
+        exiting: new GameState_Exiting()
     };
     this.currentGameState = this.gameStates.playing;
     this.currentGameState.call();
@@ -38,9 +38,6 @@ Game.prototype.start = function () {
 };
 
 Game.prototype.gameLoop = function () {
-    
-    // Preberi pritisnjene gumbe in popravi ustrezne vrednosti
-    //this.controls.handleKeys(); premaknjeno v GameState_Playing?
 
     var elapsedTime = this.resetTime();
 

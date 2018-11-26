@@ -7,8 +7,9 @@ function PlayerObject (controls) {
 	this.controls = controls;
 
 	this.loadModel("assets/models/kurent.json");
+	//this.loadVertices();
 
-	this.setPosition([5.0, this.objHeight / 2.0, 3.0]);
+	this.setPosition([5.0, 0.0, 3.0]);	//Y position is set appropriately only after objHeight is calculated
 	this.setAngle(0.0);
 	this.setYaw(0.0);
     this.setSpeed(8.0);
@@ -17,16 +18,19 @@ function PlayerObject (controls) {
 PlayerObject.prototype = new CollidableObject();
 
 PlayerObject.prototype.handleLoadedModel = function (data) {
-	
+
 	this.vertices = data.vertices;
     this.colors = [
-        [0.937, 0.902, 0.727, 1.0] // Beige?
+        [0.937, 0.902, 0.727, 1.0] // Beige
     ];
     this.nVertices = this.vertices.length / 3;
+    //This is a last resort measure: to avoid double shaders for textured/untextured
+	//every object needs a valid array object.textureCoords of length nVertices * 2
+    this.textureCoords = new Array(this.nVertices * 2).fill(0.0);
 
     this.vertexIndices = data.faces;
 	this.nVertexIndices = this.vertexIndices.length;
-	
+
     this.findHeight();
     this.findRadius();
     GRAPHICS.loadObjectVertices(this);
@@ -35,7 +39,7 @@ PlayerObject.prototype.handleLoadedModel = function (data) {
 PlayerObject.prototype.update = function (elapsedTime) {
 
 	this.control(elapsedTime);
-	
+
 	// Gameplay stuff
 };
 
@@ -66,9 +70,8 @@ PlayerObject.prototype.controlCamera = function () {
 		cameraYaw -= this.getYaw();
 
 		// Move on top of terrain if camera is inside terrain
-		var landscapeCameraHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(cameraPosition[0], cameraPosition[2]);
-		var landscapePlayerHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(this.getPosition()[0], this.getPosition()[2]);
-		if (landscapeCameraHeight - landscapePlayerHeight > 5.0) {
+		const landscapeCameraHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(cameraPosition[0], cameraPosition[2]);
+		if (cameraPosition[1] < landscapeCameraHeight) {
 			cameraPosition[1] = landscapeCameraHeight + 1;
 		}
 	}

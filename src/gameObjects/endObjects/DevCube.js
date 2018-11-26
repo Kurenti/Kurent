@@ -5,6 +5,8 @@
 
 function DevCube (position) {
 
+    this.textured = Math.round(Math.random());
+
 	this.loadVertices();
 
 	this.setPosition(position); // [Math.random() * 11 - 5, Math.random() * 7 - 3, -10.0]
@@ -62,7 +64,48 @@ DevCube.prototype.loadVertices = function () {
         [1.0, 0.0, 1.0, 1.0], // Right face
         [0.0, 0.0, 1.0, 1.0]  // Left face
     ];
+    this.textureCoords = [
+        // Front face
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0,
+
+        // Back face
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0,
+        0.0, 0.0,
+
+        // Top face
+        0.0, 1.0,
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+
+        // Bottom face
+        1.0, 1.0,
+        0.0, 1.0,
+        0.0, 0.0,
+        1.0, 0.0,
+
+        // Right face
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0,
+        0.0, 0.0,
+
+        // Left face
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0
+    ];
     this.nVertices = 24;
+
+    if (this.textured) {
+        GRAPHICS.loadTexture(this, "assets/crate.gif");
+    }
 
     this.vertexIndices = [
         0, 1, 2,      0, 2, 3,    // Front face

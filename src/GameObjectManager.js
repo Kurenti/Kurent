@@ -27,6 +27,7 @@ function GameObjectManager () {
 	// Ce se jih nabere, se pac naredi en dict z resnimi named objekti
 
 	this.collidableObjects = [];
+    this.landscape = false;
 }
 
 GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) {

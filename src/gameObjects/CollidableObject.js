@@ -16,29 +16,36 @@ function CollidableObject () {
 }
 CollidableObject.prototype = new MovableObject();
 
-VisibleObject.prototype.findHeight = function () {
+CollidableObject.prototype.findHeight = function () {
 	//Function that calculates Objects height
 	//!!Must be called in childs contructor!!
 
 	var maxY = -Infinity;
 	var minY = Infinity;
-
+	
 	for (var i = 1; i < this.vertices.length; i+=3) {
-		if (this.vertices[i] < minY) {
-			minY = this.vertices[i];
-		} else if (this.vertices[i] > maxY) {
-			maxY = this.vertices[i];
-		}
-	}
+        if (this.vertices[i] < minY) {
+            minY = this.vertices[i];
+        } else if (this.vertices[i] > maxY) {
+            maxY = this.vertices[i];
+        }
+    }
 
 	this.objHeight = maxY - minY;
+
+	//Set initial position to Ground level + 0.5*height
+	const landscape = GAME_OBJECT_MANAGER.getLandscape();
+	if (landscape) {
+		const position = this.getPosition();
+        this.setPosition([position[0], landscape.getHeight(position[0], position[2]) + this.objHeight / 2.0, position[2]]);
+    }
 };
 
-VisibleObject.prototype.findRadius = function () {
+CollidableObject.prototype.findRadius = function () {
 	// Finds radius of circle around object in the XZ plane.
 	//!!Must be called in childs contructor!!
 
-	// Because the game is nostly planar and this only serves
+	// Because the game is mostly planar and this only serves
 	// as optimization for AABB collision, it's fine.
 	// If need be, just uncomment the 2nd line in vertR2.
 	// This relies on object being centered at 0,0,0
@@ -71,10 +78,12 @@ CollidableObject.prototype.collide = function (secondObject) {
 									secondObject.getPosition()[1],
 									secondObject.getPosition()[2]);
 
-	// Simple sphere (2d circle actually) collision
+	// Simple sphere collision
 	///////////////////////////////////////////////
 	var diff = vec3.create();
 	vec3.sub(diff, position2, position1);
+	//Set DiffY to zero for "cylinder" collision
+    //diff[1] = 0.0;
 
 	// Check for sphere overlap
 	if (vec3.len(diff) < this.objRadius + secondObject.objRadius) {
@@ -170,7 +179,7 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 	//in XZ + height difference. Then move for that vector scaled to length of original
 	//move vector in XZ
 	var movedPosition = vec3.create();
-	var moveVector = vec3.create();
+	var finalMoveVector = vec3.create();
 
 	vec3.add(movedPosition, this.getPosition(), bestRestrictedMoveVector);
 
@@ -181,18 +190,18 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 		movedPosition[1] = movedHeight;
 	}
 
-	vec3.sub(moveVector, movedPosition, this.getPosition());
-	vec3.normalize(moveVector, moveVector);
-	vec3.scale(moveVector, moveVector, vec3.len(bestRestrictedMoveVector));
+	vec3.sub(finalMoveVector, movedPosition, this.getPosition());
+	vec3.normalize(finalMoveVector, finalMoveVector);
+	vec3.scale(finalMoveVector, finalMoveVector, vec3.len(bestRestrictedMoveVector));
 
 	// Finally move object for vector. This is just original moveVector
 	// in case of no collision or appropriatelly fixed moveVector in
 	// case of collision
-	this.moveForVector(moveVector);
+	this.moveForVector(finalMoveVector);
 };
 
 CollidableObject.prototype.resetCollision = function () {
 	//Resets collision settings at the end of each frame
-	//for a collidable object
+	//for a colidable object
 	this.noGoVectors = [];
 };
