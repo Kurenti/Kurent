@@ -7,32 +7,87 @@ function Landscape () {
 
 	this.landscapeWidth = 0;
 	this.landscapeDepth = 0;
+	this.stripDepth = 0;
+	this.landscapeStrips = [];
 	this.loadModel("assets/heightmap/testHeightmap.json");
 }
-Landscape.prototype = new VisibleObject();
+
+Landscape.prototype.draw = function () {
+	//Iterate over all landscape strips and draw them
+	this.landscapeStrips.forEach( function(strip) {
+		strip.draw();
+	});
+};
+
+// Improve GameObjectManager so as not to need this
+Landscape.prototype.update = function () {};
+
+// Conundrum: inherit from VisibleObject and have a bunch of unused vars and arrays for drawing
+// (Landscape itself is not a drawable object, it implements its own .draw) or just copy
+// .loadModel from VisibleObject?
+Landscape.prototype.loadModel = function (path) {
+
+    var request = new XMLHttpRequest();
+    request.open("GET", path);
+    request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+            this.handleLoadedModel(JSON.parse(request.responseText));
+        }
+    }.bind(this);
+    request.send();
+
+    //Running from local (non-server) will trigger CORS, JSON.parse
+    //will fail on an empty request.responseText string with SintaxError
+};
 
 Landscape.prototype.handleLoadedModel = function (landscapeData) {
-	//Handle data read from file - landscapeData must be an object
+	//Handle data read from file - landscapeData must be an object of landscape strips
 
-	// Load map width and depth
-	this.landscapeWidth = landscapeData.heightmapWidth;
-	this.landscapeDepth = landscapeData.heightmapDepth;
+	//Walk over strips in the json landscape data file
+	for (var k in landscapeData) {
+		//for each key gotten check if it's really a key (not a method of the object)
+		if (landscapeData.hasOwnProperty(k)) {
+			this.handleLandscapeStrip(landscapeData[k]);
+		}
+	}
+};
 
-	// Load vertex data
-	this.vertices = landscapeData.heightmapVertices;
-    this.nVertices = landscapeData.heightmapNVertices;
-	//Color data should somehow be received from the .json object
-	this.colors = [[0.33, 0.67, 0.26, 1.0]];
-	//This is a last resort measure: to avoid double shaders for textured/untextured
+Landscape.prototype.handleLandscapeStrip = function (landscapeStripData) {
+
+    // Load map width and depth
+    this.landscapeWidth = landscapeStripData.heightmapWidth;
+    this.landscapeDepth += landscapeStripData.heightmapDepth;
+    // Set stripDepth to depth of first strip
+	if (!this.stripDepth) {
+		this.stripDepth = landscapeStripData.heightmapDepth;
+	}
+
+    // Create a new generic visibleObject
+	var landscapeStrip = new VisibleObject();
+
+	//It is either vertex coordinates in heightmapReader are set to image origin (not strip origin) or this!
+	//landscapeStrip.setPosition([landscapeStripData.heightmapX, 0, landscapeStripData.heightmapZ]);
+
+	// Populate it with stripData
+    // Load vertex data
+    landscapeStrip.vertices = landscapeStripData.heightmapVertices;
+    landscapeStrip.nVertices = landscapeStripData.heightmapNVertices;
+    //Color data should somehow be received from the .json object
+    landscapeStrip.colors = [[0.33, 0.67, 0.26, 1.0]];
+    //This is a last resort measure: to avoid double shaders for textured/untextured
     //every object needs a valid array object.textureCoords of length nVertices * 2
-	//If it turns out landscape does need real texture coords, parse that in the
-	//Python heightmap reader!
-    this.textureCoords = new Array(this.nVertices * 2).fill(0.0);
+    //If it turns out landscape does need real texture coords, parse that in the
+    //Python heightmap reader!
+    landscapeStrip.textureCoords = new Array(landscapeStrip.nVertices * 2).fill(0.0);
 
-    this.vertexIndices = landscapeData.heightmapVertexIndices;
-    this.nVertexIndices = landscapeData.heightmapNVertexIndices;
+    landscapeStrip.vertexIndices = landscapeStripData.heightmapVertexIndices;
+    landscapeStrip.nVertexIndices = landscapeStripData.heightmapNVertexIndices;
 
-	GRAPHICS.loadObjectVertices(this);
+    // Introduce the visibleObject representing a landscape strip to GRAPHICS
+    GRAPHICS.loadObjectVertices(landscapeStrip);
+
+    // Finally save it for future use (drawing)
+	this.landscapeStrips.push(landscapeStrip);
 };
 
 Landscape.prototype.getHeight = function (x, z) {
@@ -45,10 +100,10 @@ Landscape.prototype.getHeight = function (x, z) {
 		return false;
 	}
 
-	var P1x = Math.floor(x);
-	var P1z = Math.ceil(z);
-	var P2x = Math.ceil(x);
-	var P2z = Math.floor(z);
+	const P1x = Math.floor(x);
+    const P1z = Math.ceil(z);
+    const P2x = Math.ceil(x);
+    const P2z = Math.floor(z);
 	var P3x = 0;
     var P3z = 0;
 	if ((x % 1) + (z % 1) < 1) {
@@ -59,9 +114,9 @@ Landscape.prototype.getHeight = function (x, z) {
 		P3z = Math.ceil(z);
 	}
 
-	var height1 = this.getPixelHeight(P1x, P1z);
-	var height2 = this.getPixelHeight(P2x, P2z);
-	var height3 = this.getPixelHeight(P3x, P3z);
+	const height1 = this.getPixelHeight(P1x, P1z);
+    const height2 = this.getPixelHeight(P2x, P2z);
+    const height3 = this.getPixelHeight(P3x, P3z);
 
 	//Implementirano interpoliranje z baricentricnimi koordinatami - klasicno
 	//interpoliranje po weight = 1/dist se je izkazalo za neprimerno, clipping
@@ -72,20 +127,25 @@ Landscape.prototype.getHeight = function (x, z) {
 		return false;
 	}
 
-	var weight1 = ((P2z - P3z)*(x - P3x) + (P3x - P2x)*(z - P3z)) /
+	//This will always result in a float, as x and z are floats
+    const weight1 = ((P2z - P3z)*(x - P3x) + (P3x - P2x)*(z - P3z)) /
 				  ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
-	var weight2 = ((P3z - P1z)*(x - P3x) + (P1x - P3x)*(z - P3z)) /
+    const weight2 = ((P3z - P1z)*(x - P3x) + (P1x - P3x)*(z - P3z)) /
 				  ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
-	var weight3 = 1 - weight1 - weight2;
+    const weight3 = 1 - weight1 - weight2;
 
-	return ((1.0*height1 * weight1) + (1.0*height2 * weight2) + (1.0*height3 * weight3)) /
+	return ((height1 * weight1) + (height2 * weight2) + (height3 * weight3)) /
 		   (weight1 + weight2 + weight3);
 };
 
 Landscape.prototype.getPixelHeight = function (x, z) {
-	return this.vertices[
-		z * this.landscapeWidth * 3 + 	//z
-		x * 3 +							//x
-		1								//height value
-	];
+	//x and z are integers
+
+	const k = Math.floor(z / this.stripDepth);
+
+    return this.landscapeStrips[k].vertices[
+		(z - k*this.stripDepth) * (this.landscapeWidth - 1) * 3 * 6 +	//z
+    	x * 3 * 6 +														//x
+    	1																//height value in x, y, z triplet
+    ];
 };

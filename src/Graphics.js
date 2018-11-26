@@ -254,12 +254,15 @@ Graphics.prototype.drawObject = function (object) {
     this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, object.vertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
     // Vertex textures
+    //Attribute needs to be set, as it has been set up, even if there is no texture
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexTextureCoordBuffer);
     this.gl.vertexAttribPointer(this.shaderProgram.textureCoordAttribute, object.vertexTextureCoordBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
-
-    this.gl.activeTexture(this.gl.TEXTURE0);
-    this.gl.bindTexture(this.gl.TEXTURE_2D, object.texture);
-    this.gl.uniform1i(this.shaderProgram.samplerUniform, 0);
+    //Only bind texture if needed though
+    if (object.hasTextures) {
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, object.texture);
+        this.gl.uniform1i(this.shaderProgram.samplerUniform, 0);
+    }
 
     // Vertex colors
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexColorBuffer);

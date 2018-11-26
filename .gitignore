@@ -1,1 +1,4 @@
+#Webstorm stuff
 .idea/
+#Test heighmap images
+assets/heightmap/images/*
