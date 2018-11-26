@@ -20,35 +20,17 @@ Landscape.prototype.handleLoadedModel = function (landscapeData) {
 
 	// Load vertex data
 	this.vertices = landscapeData.heightmapVertices;
+    this.nVertices = landscapeData.heightmapNVertices;
 	//Color data should somehow be received from the .json object
 	this.colors = [[0.33, 0.67, 0.26, 1.0]];
-	this.nVertices = this.vertices.length / 3;
 	//This is a last resort measure: to avoid double shaders for textured/untextured
     //every object needs a valid array object.textureCoords of length nVertices * 2
 	//If it turns out landscape does need real texture coords, parse that in the
 	//Python heightmap reader!
     this.textureCoords = new Array(this.nVertices * 2).fill(0.0);
-	
-	// Calculate faces
-	//Walk over grid even though the this.vertices is a 1D array (and so
-	//will be this.vertexIndices)
-	//TODO:save this somewhere, it makes no sense to recalculate
-	//every time (especially for higher resolution maps)
-	for (var i = 0; i < this.landscapeDepth - 1; i++) {
-		for (var j = 0; j < this.landscapeWidth - 1; j++) {
 
-			//Transform 2D location to position in 1D array
-			var nVertex = i * this.landscapeWidth + j
-
-			//Append the 2 triangles
-			this.vertexIndices = this.vertexIndices.concat(
-				[nVertex, nVertex + 1, nVertex + this.landscapeWidth,							//Upper-left triangle
-				 nVertex + 1, nVertex + this.landscapeWidth, nVertex + this.landscapeWidth + 1]	//Lower-right triangle
-			);
-			//Increment n of vertex indices by 6 (2*triangle)
-			this.nVertexIndices += 6;
-		}
-	}
+    this.vertexIndices = landscapeData.heightmapVertexIndices;
+    this.nVertexIndices = landscapeData.heightmapNVertexIndices;
 
 	GRAPHICS.loadObjectVertices(this);
 };
@@ -67,12 +49,14 @@ Landscape.prototype.getHeight = function (x, z) {
 	var P1z = Math.ceil(z);
 	var P2x = Math.ceil(x);
 	var P2z = Math.floor(z);
+	var P3x = 0;
+    var P3z = 0;
 	if ((x % 1) + (z % 1) < 1) {
-		var P3x = Math.floor(x);
-		var P3z = Math.floor(z);
+		P3x = Math.floor(x);
+		P3z = Math.floor(z);
 	} else {
-		var P3x = Math.ceil(x);
-		var P3z = Math.ceil(z);
+		P3x = Math.ceil(x);
+		P3z = Math.ceil(z);
 	}
 
 	var height1 = this.getPixelHeight(P1x, P1z);

@@ -104,7 +104,7 @@ DevCube.prototype.loadVertices = function () {
     this.nVertices = 24;
 
     if (this.textured) {
-        GRAPHICS.loadTexture(this, "assets/crate.gif");
+        GRAPHICS.loadTexture(this, "assets/textures/crate.gif");
     }
 
     this.vertexIndices = [
