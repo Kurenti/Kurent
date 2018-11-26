@@ -54,12 +54,12 @@ quite a bit -->
 <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
 
-    varying vec3 vColor;
     varying vec3 vLightWeighting;
+    varying vec3 vColor;
 
     void main(void) {
         gl_FragColor = vec4(vColor * vLightWeighting, 1.0);
-        //gl_FragColor = vColor;
+        // gl_FragColor = vec4(vColor, 1);
     }
 </script>
 
@@ -72,21 +72,22 @@ quite a bit -->
     uniform mat4 uPMatrix;
     uniform mat3 uNMatrix;
 
-    uniform vec3 uAmbientColor;
-    uniform vec3 uLightingDirection;
-    uniform vec3 uDirectionalColor;
+    // uniform vec3 uAmbientColor;
+    // uniform vec3 uLightingDirection;
+    // uniform vec3 uDirectionalColor;
 
     varying vec3 vLightWeighting;
-
     varying vec3 vColor;
 
     void main(void) {
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
         vColor = vec3(aVertexColor.x, aVertexColor.y, aVertexColor.z);
 
+        // vec3 transformedNormal = uNMatrix * vec3(1.0, 1.0, 1.0);
         vec3 transformedNormal = uNMatrix * aVertexNormal;
-        float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-        vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+        float directionalLightWeighting = max(dot(transformedNormal, vec3(-0.25, -0.25, -1.0)), 0.0);
+        vLightWeighting = vec3(0.1, 0.1, 0.1) + vec3(1.0, 1.0, 1.0) * directionalLightWeighting;
+
     }
 </script>
 

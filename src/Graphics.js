@@ -22,7 +22,7 @@ function Graphics() {
 	this.canvas = document.getElementById("canvas");
     this.initWebGl();
     this.initShaders();
-    //this.initBuffers();
+    // this.initBuffers();
 
     if (this.gl) {
 	    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);                     // Set clear color to black, fully opaque
@@ -117,9 +117,9 @@ Graphics.prototype.initShaders = function () {
     this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
     this.shaderProgram.nMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uNMatrix");
 
-    this.shaderProgram.ambientColorUniform = this.gl.getUniformLocation(this.shaderProgram, "uAmbientColor");
-    this.shaderProgram.lightingDirectionUniform = this.gl.getUniformLocation(this.shaderProgram, "uLightingDirection");
-    this.shaderProgram.directionalColorUniform = this.gl.getUniformLocation(this.shaderProgram, "uDirectionalColor");
+    // this.shaderProgram.ambientColorUniform = this.gl.getUniformLocation(this.shaderProgram, "uAmbientColor");
+    // this.shaderProgram.lightingDirectionUniform = this.gl.getUniformLocation(this.shaderProgram, "uLightingDirection");
+    // this.shaderProgram.directionalColorUniform = this.gl.getUniformLocation(this.shaderProgram, "uDirectionalColor");
 };
 
 // Utility functions used in drawing objects
@@ -146,9 +146,9 @@ Graphics.prototype.setMatrixUniforms = function () {
     mat3.normalFromMat4(normalMatrix, this.mvMatrix);
     this.gl.uniformMatrix3fv(this.shaderProgram.nMatrixUniform, false, normalMatrix);
 
-    this.gl.uniform3f(this.ambientColorUniform, 1, 1, 1);
-    this.gl.uniform3f(this.lightingDirectionUniform, 1, 1, 1);
-    this.gl.uniform3f(this.directionalColorUniform, 1, 1, 1);
+    // this.gl.uniform3f(this.ambientColorUniform, 1, 1, 1);
+    // this.gl.uniform3f(this.lightingDirectionUniform, 1, 1, 1);
+    // this.gl.uniform3f(this.directionalColorUniform, 1, 1, 1);
 };
 
 Graphics.prototype.setUpDraw = function () {
@@ -207,7 +207,7 @@ Graphics.prototype.loadObjectVertices = function (object) {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexNormalBuffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertexNormals), this.gl.STATIC_DRAW);
     object.vertexNormalBuffer.itemSize = 3;
-    object.vertexNormalBuffer.numItems = 24;
+    object.vertexNormalBuffer.numItems = object.nNormals;
 };
 
 // Function that lets a visible object draw itself
