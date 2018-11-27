@@ -107,6 +107,12 @@ Graphics.prototype.initShaders = function () {
     this.shaderProgram.vertexPositionAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexPosition");
     this.gl.enableVertexAttribArray(this.shaderProgram.vertexPositionAttribute);
 
+    this.shaderProgram.textureCoordAttribute = this.gl.getAttribLocation(this.shaderProgram, "aTextureCoord");
+    this.gl.enableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
+
+    this.shaderProgram.vertexNormalAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexNormal");
+    this.gl.enableVertexAttribArray(this.shaderProgram.vertexNormalAttribute);
+
     this.shaderProgram.vertexColorAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexColor");
     this.gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
 
@@ -116,10 +122,7 @@ Graphics.prototype.initShaders = function () {
     this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uPMatrix");
     this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
     this.shaderProgram.nMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uNMatrix");
-
-    // this.shaderProgram.ambientColorUniform = this.gl.getUniformLocation(this.shaderProgram, "uAmbientColor");
-    // this.shaderProgram.lightingDirectionUniform = this.gl.getUniformLocation(this.shaderProgram, "uLightingDirection");
-    // this.shaderProgram.directionalColorUniform = this.gl.getUniformLocation(this.shaderProgram, "uDirectionalColor");
+    this.shaderProgram.samplerUniform = this.gl.getUniformLocation(this.shaderProgram, "uSampler");
 };
 
 // Utility functions used in drawing objects
@@ -171,6 +174,20 @@ Graphics.prototype.loadObjectVertices = function (object) {
 	this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.vertices), this.gl.STATIC_DRAW);
     object.vertexPositionBuffer.itemSize = 3;
     object.vertexPositionBuffer.numItems = object.nVertices;
+
+    // Normals
+    object.normalsBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.normalsBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.normals), this.gl.STATIC_DRAW);
+    object.normalsBuffer.itemSize = 3;
+    object.normalsBuffer.numItems = object.nNormals;
+
+    // Textures
+    object.vertexTextureCoordBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexTextureCoordBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.textureCoords), this.gl.STATIC_DRAW);
+    object.vertexTextureCoordBuffer.itemSize = 2;
+    object.vertexTextureCoordBuffer.numItems = object.nVertices;
 
     // Colours
     object.vertexColorBuffer = this.gl.createBuffer();
@@ -229,7 +246,8 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
     this.mvPushMatrix();
 
     // Rotate
-    mat4.rotate(this.mvMatrix, this.mvMatrix, degToRad(yaw), [0.0, 1.0, 0.0]);
+    mat4.rotate(this.mvMatrix, this.mvMatrix, degToRad(object.getYaw()), [0.0, 1.0, 0.0]);
+    this.setMatrixUniforms();
 
     // Scale?
     //implement if needed//
@@ -242,17 +260,14 @@ Graphics.prototype.drawObject = function (vertexPositionBuffer,
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexColorBuffer);
     this.gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, vertexColorBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
-    this.setMatrixUniforms();
-
-    // vertex normals
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexNormalBuffer);
-    this.gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, vertexNormalBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+    // Normals
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.normalsBuffer);
+    this.gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, object.normalsBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
     // Faces
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
-    this.gl.drawElements(this.gl.TRIANGLES, vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
-
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
     this.mvPopMatrix();
+    this.gl.drawElements(this.gl.TRIANGLES, object.vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
 };
 
 

@@ -175,11 +175,11 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 	vec3.add(movedPosition, this.getPosition(), bestRestrictedMoveVector);
 
 	//Moved height can return false if something fails
-	var movedHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(
-									movedPosition[0], movedPosition[2]) + this.objHeight / 2.0;
-	if (movedHeight) {
-		movedPosition[1] = movedHeight;
-	}
+	// var movedHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(
+	// 								movedPosition[0], movedPosition[2]) + this.objHeight / 2.0
+	// if (movedHeight) {
+	// 	movedPosition[1] = movedHeight;
+	// }
 
 	vec3.sub(moveVector, movedPosition, this.getPosition());
 	vec3.normalize(moveVector, moveVector);
