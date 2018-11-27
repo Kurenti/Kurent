@@ -41,6 +41,9 @@ PlayerObject.prototype.update = function (elapsedTime) {
 	this.control(elapsedTime);
 
 	// Gameplay stuff
+    if (GAME_OBJECT_MANAGER.getSnow()) {
+        GAME_OBJECT_MANAGER.getSnow().meltAt(this.getPosition(), 1, elapsedTime);
+    }
 };
 
 PlayerObject.prototype.control = function (elapsedTime) {

@@ -40,6 +40,6 @@ with open(inFile, "r") as inOBJ, open(outFile, "w") as outJSON:
 			modelData["vertexNormals"] += [float(x) for x in line.split()[1:]];
 
 		elif line[0] == "f":
-			modelData["faces"] += [int(x.split("//")[0]) for x in line.split()[1:]]
+			modelData["faces"] += [int(x.split("//")[0]) - 1 for x in line.split()[1:]]
 
 	json.dump(modelData, outJSON)

@@ -65,21 +65,19 @@ MovableObject.prototype.turn = function (elapsedTime, direction) {
 
 MovableObject.prototype.makeMoveVector = function (elapsedTime, direction = 1) {
 	// Return move vector (movement in given elapsedTime at speed and angle)
-	// direction is forward / backwards
+	// direction is forward / backwards / standing still
 
 	if (direction < 0) {
 		direction = -1;
 	}
-	else {
+	else if (direction > 0) {
 		direction = 1;
 	}
 
-	var moveVector = vec3.fromValues(
+	return vec3.fromValues(
 			Math.sin(degToRad(this.angle)) * this.speed * elapsedTime * direction / 1000,
 			0,
 			Math.cos(degToRad(this.angle)) * this.speed * elapsedTime * direction / 1000);
-
-	return moveVector;
 };
 
 MovableObject.prototype.move = function (elapsedTime, direction = 1) {
@@ -99,7 +97,5 @@ MovableObject.prototype.moveInDirection = function
 
 		this.setYaw(this.angle);
 	}
-	if (moveDir) {
-		this.move(elapsedTime, moveDir);
-	}
+	this.move(elapsedTime, moveDir);
 };

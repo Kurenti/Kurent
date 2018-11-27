@@ -10,6 +10,7 @@ function VisibleObject() {
 	this.vertices = [];
 	this.colors = [1.0, 1.0, 1.0, 1.0];
 	this.nVertices = 0;
+	this.dynamicVertices = false;
 	this.vertexIndices = [];
 	this.nVertexIndices = 0;
 	this.hasTextures = false;

@@ -50,6 +50,9 @@ Landscape.prototype.handleLoadedModel = function (landscapeData) {
 			this.handleLandscapeStrip(landscapeData[k]);
 		}
 	}
+
+	//After the landscape is loaded, cover it with snow!
+    GAME_OBJECT_MANAGER.add(new Snow(), ObjectTypes.Snow);
 };
 
 Landscape.prototype.handleLandscapeStrip = function (landscapeStripData) {
@@ -122,6 +125,7 @@ Landscape.prototype.getHeight = function (x, z) {
 	//interpoliranje po weight = 1/dist se je izkazalo za neprimerno, clipping
 	//ob vzponih in padcih
 
+    //Do not divide by 0
 	if (((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z)) === 0 ||
 		((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z)) === 0) {
 		return false;
@@ -134,8 +138,21 @@ Landscape.prototype.getHeight = function (x, z) {
 				  ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
     const weight3 = 1 - weight1 - weight2;
 
-	return ((height1 * weight1) + (height2 * weight2) + (height3 * weight3)) /
-		   (weight1 + weight2 + weight3);
+    const landscapeHeight = ((height1 * weight1) + (height2 * weight2) + (height3 * weight3)) /
+							(weight1 + weight2 + weight3);
+    var snowHeight = 0;
+
+    //If landscape is covered with snow, return height at landscape + snow cover
+	if (GAME_OBJECT_MANAGER.getSnow()) {
+		snowHeight = GAME_OBJECT_MANAGER.getSnow().getHeight(x, z);
+		if (snowHeight > landscapeHeight) {
+			console.log("snow");
+		} else {
+            console.log("ground");
+		}
+	}
+
+	return Math.max(landscapeHeight, snowHeight);
 };
 
 Landscape.prototype.getPixelHeight = function (x, z) {

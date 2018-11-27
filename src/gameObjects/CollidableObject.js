@@ -191,8 +191,13 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 	}
 
 	vec3.sub(finalMoveVector, movedPosition, this.getPosition());
-	vec3.normalize(finalMoveVector, finalMoveVector);
-	vec3.scale(finalMoveVector, finalMoveVector, vec3.len(bestRestrictedMoveVector));
+	//scale the final move vector to original 2D move vector - unless you're standing still!
+	//in case of standing still with snow melting under feet, move directly on top of snow
+	const originalLength = vec3.len(bestRestrictedMoveVector);
+	if (originalLength > 0) {
+        vec3.normalize(finalMoveVector, finalMoveVector);
+        vec3.scale(finalMoveVector, finalMoveVector, vec3.len(bestRestrictedMoveVector));
+    }
 
 	// Finally move object for vector. This is just original moveVector
 	// in case of no collision or appropriatelly fixed moveVector in

@@ -28,6 +28,7 @@ function GameObjectManager () {
 
 	this.collidableObjects = [];
     this.landscape = false;
+    this.snow = false;
 }
 
 GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) {
@@ -41,11 +42,19 @@ GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) 
 		case ObjectTypes.Landscape:
 			this.landscape = object;
 			break;
+
+		case ObjectTypes.Snow:
+			this.snow = object;
+			break;
 	}
 };
 
 GameObjectManager.prototype.getLandscape = function () {
 	return this.landscape;
+};
+
+GameObjectManager.prototype.getSnow = function () {
+	return this.snow;
 };
 
 GameObjectManager.prototype.drawAll = function () {

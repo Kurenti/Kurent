@@ -160,7 +160,11 @@ Graphics.prototype.loadObjectVertices = function (object) {
 	// Vertices
 	object.vertexPositionBuffer = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
-	this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.vertices), this.gl.STATIC_DRAW);
+	if (object.dynamicVertices) {
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.vertices), this.gl.DYNAMIC_DRAW);
+    } else {
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.vertices), this.gl.STATIC_DRAW);
+    }
     object.vertexPositionBuffer.itemSize = 3;
     object.vertexPositionBuffer.numItems = object.nVertices;
 
@@ -196,6 +200,8 @@ Graphics.prototype.loadObjectVertices = function (object) {
     this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(object.vertexIndices), this.gl.STATIC_DRAW);
     object.vertexIndexBuffer.itemSize = 1;
     object.vertexIndexBuffer.numItems = object.nVertexIndices;
+
+    //When normals implemented: allow DYNAMIC_DRAW like with vertices!
 };
 
 // Function that loads an image to objects texture
@@ -221,6 +227,12 @@ Graphics.prototype.handleLoadedTexture = function (texture) {
     this.gl.generateMipmap(this.gl.TEXTURE_2D);
 
     this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+};
+
+// Function that rebinds new vertex positions in case  of dynamic vertices
+Graphics.prototype.moveVertices = function (vertexBuffer, vertices) {
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
+    this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(vertices));
 };
 
 // Function that lets a visible object draw itself
