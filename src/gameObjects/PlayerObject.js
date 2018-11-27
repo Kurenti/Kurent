@@ -45,11 +45,11 @@ PlayerObject.prototype.controlCamera = function () {
 	vec3.add(cameraPosition, cameraPosition, this.getPosition());
 
 	// Move on top of terrain if camera is inside terrain
-	// var landscapeCameraHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(cameraPosition[0], cameraPosition[2]);
-	// var landscapePlayerHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(this.getPosition()[0], this.getPosition()[2]);
-	// if (landscapeCameraHeight - landscapePlayerHeight > 5.0) {
-	// 	cameraPosition[1] = landscapeCameraHeight + 1;
-	// }
+	var landscapeCameraHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(cameraPosition[0], cameraPosition[2]);
+	var landscapePlayerHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(this.getPosition()[0], this.getPosition()[2]);
+	if (landscapeCameraHeight - landscapePlayerHeight > 5.0) {
+		cameraPosition[1] = landscapeCameraHeight + 1;
+	}
 
 	// Set viewport
 	vec3.negate(cameraPosition, cameraPosition);
