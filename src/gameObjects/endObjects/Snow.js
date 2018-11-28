@@ -36,11 +36,11 @@ Snow.prototype.meltAt = function (position, strength, elapsedTime) {
                                                             position[1],
                                                             position[2] + ((i-strength) * this.snowCubeWidth)]);
             if (changedCube) {
-                for (var vert = 1; vert < 12; vert += 3) {
-                    if ((i === 0 && (vert === 1 || vert === 10)) ||
-                        (i === 2*strength && (vert === 4 || vert === 7)) ||
-                        (j === 0 && (vert === 1|| vert === 4)) ||
-                        (j === 2*strength && (vert === 7|| vert === 10))) {
+                for (var vert = 1; vert < 17; vert += 3) {
+                    if ((i === 0 && (vert === 1 || vert === 10 || vert === 16)) ||
+                        (i === 2*strength && (vert === 4 || vert === 7|| vert === 13)) ||
+                        (j === 0 && (vert === 1 || vert === 4 || vert === 13)) ||
+                        (j === 2*strength && (vert === 7 || vert === 10 || vert === 16))) {
                         continue;
                     }
                     const vertX = changedCube.getPosition()[0] + changedCube.vertices[vert - 1];
@@ -52,7 +52,7 @@ Snow.prototype.meltAt = function (position, strength, elapsedTime) {
 
                     if (changedCube.vertices[vert] >
                         GAME_OBJECT_MANAGER.getLandscape().getHeight(vertX, vertZ)
-                        - this.snowThickness / 2.0) {
+                                - this.snowThickness / 2.0) {
                         changedCube.vertices[vert] -= change * (1 - vertDistance / radius);
                     }
                 }
@@ -175,13 +175,18 @@ Snow.prototype.makeSnowCubicle = function (position, width) {
 
     // Load vertex data
     snowCubicle.vertices = [
-        // Top face                           Y vertex
+        //                                  Y vertex
         -width, p3height+thickness, -width, //1
-        -width, p4height+thickness,  width, //4
+        -width, p4height+thickness,  width, //4       *of top left triangle
         width, p1height+thickness,  width,  //7
-        width, p2height+thickness, -width,  //10
+        width, p2height+thickness, -width,  //10      *of top left triangle
+
+        //After snow all done added these two because of normals - -/+ and +/- of bot right triangle
+        //This makes some vertex indexing unintuitive, fix if there is time
+        -width, p4height+thickness,  width, //13      *of bot right triangle
+        width, p2height+thickness, -width,  //16      *of bot right triangle
     ];
-    snowCubicle.nVertices = 4;
+    snowCubicle.nVertices = 6;
     //Make dynamic
     snowCubicle.dynamicVertices = true;
     //Set up normals
@@ -191,7 +196,7 @@ Snow.prototype.makeSnowCubicle = function (position, width) {
     snowCubicle.textureCoords = new Array(snowCubicle.nVertices * 2).fill(0.0);
     //Set up indices
     snowCubicle.vertexIndices = [
-        0, 1, 2,      0, 2, 3,    // Top face
+        0, 1, 3,      4, 5, 2,    // Top face
     ];
     snowCubicle.nVertexIndices = 6;
     //Set position
@@ -210,8 +215,8 @@ Snow.prototype.makeNormals = function (snowCubicle) {
     var normalBR = vec3.create();   //bot-right
     vec3.cross(normalTL, vec3.fromValues(0.0,snowCubicle.vertices[4] - snowCubicle.vertices[1], width*2.0),
                          vec3.fromValues(width*2.0, snowCubicle.vertices[10] - snowCubicle.vertices[1], 0.0));
-    vec3.cross(normalBR, vec3.fromValues(0.0, snowCubicle.vertices[10] - snowCubicle.vertices[7], width*2.0),
-                         vec3.fromValues(width*2.0, snowCubicle.vertices[4] - snowCubicle.vertices[7], 0.0));
+    vec3.cross(normalBR, vec3.fromValues(0.0, snowCubicle.vertices[16] - snowCubicle.vertices[7], width*2.0),
+                         vec3.fromValues(width*2.0, snowCubicle.vertices[13] - snowCubicle.vertices[7], 0.0));
     vec3.normalize(normalTL, normalTL);
     vec3.normalize(normalBR, normalBR);
     var vertexNormals = [];
@@ -219,5 +224,7 @@ Snow.prototype.makeNormals = function (snowCubicle) {
     vertexNormals.concat(normalTL);
     vertexNormals.concat(normalBR);
     vertexNormals.concat(normalTL);
+    vertexNormals.concat(normalBR);
+    vertexNormals.concat(normalBR);
     return vertexNormals;
 };
