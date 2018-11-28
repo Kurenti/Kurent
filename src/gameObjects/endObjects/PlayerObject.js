@@ -6,8 +6,8 @@
 function PlayerObject (controls) {
 	this.controls = controls;
 
-	this.loadModel("assets/models/kurent.json");
-	//this.loadVertices();
+	//this.loadModel("assets/models/kurent.json");
+	this.loadVertices();
 
 	this.setPosition([5.0, 0.0, 3.0]);	//Y position is set appropriately only after objHeight is calculated
 	this.setAngle(0.0);
@@ -33,6 +33,10 @@ PlayerObject.prototype.handleLoadedModel = function (data) {
 	//every object needs a valid array object.textureCoords of length nVertices * 2
     this.textureCoords = new Array(this.nVertices * 2).fill(0.0);
 
+    //Get normals
+    var vertexNormals = data.vertexNormals;
+
+    //Get triangles
     this.vertexIndices = data.faces;
 	this.nVertexIndices = this.vertexIndices.length;
 
