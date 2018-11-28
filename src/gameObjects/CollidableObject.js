@@ -9,6 +9,10 @@ function CollidableObject () {
 	this.objHeight = 0.0;
 	this.objRadius = 0.0;
 
+	//Y movement
+	this.freeFallAcceleration = 0.00005;// unit/ms2, fixed
+	this.ySpeed = 0.0; 				  // unit/ms
+
 	// Array of vectors of directions in which we can not move
 	// length will be equal to number of objects we are currently
 	// colliding with - usually 1, sometimes 2
@@ -173,11 +177,12 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 	});
 
 
-	//Landscape Collision
-	/////////////////////
+	//Landscape Collision & free fall
+	/////////////////////////////////
 	//To simulate landscape collision calculate vector from position to moved position
 	//in XZ + height difference. Then move for that vector scaled to length of original
-	//move vector in XZ
+	//move vector in XZ. If move vector points down, only move for max
+	//elapsedTime*freeFallAcceleration.
 	var movedPosition = vec3.create();
 	var finalMoveVector = vec3.create();
 
@@ -185,9 +190,23 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 
 	//Moved height can return false if something fails
 	var movedHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(
-									movedPosition[0], movedPosition[2]) + this.objHeight / 2.0
+									movedPosition[0], movedPosition[2]) + this.objHeight / 2.0;
 	if (movedHeight) {
-		movedPosition[1] = movedHeight;
+		//restrict to free fall acceleration (maxFall should be negative,
+		//freeFallAcceleration is positive and ySpeed is + up!)
+		const maxFall = -this.freeFallAcceleration * elapsedTime * elapsedTime / 2.0 + this.ySpeed * elapsedTime;
+        if (movedHeight - this.getPosition()[1] < maxFall) {
+			movedPosition[1] = this.getPosition()[1] + maxFall;
+		} else {
+            movedPosition[1] = movedHeight;
+        }
+
+        //Only save negative ySpeeds
+		if (movedPosition[1] < this.getPosition()[1]) {
+            this.ySpeed = (movedPosition[1] - this.getPosition()[1])/elapsedTime;
+		} else {
+			this.ySpeed = 0.0;
+		}
 	}
 
 	vec3.sub(finalMoveVector, movedPosition, this.getPosition());

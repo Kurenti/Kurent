@@ -95,15 +95,29 @@ Snow.prototype.getHeight = function (x, z) {
     var posX = x % (this.snowCubeWidth / 2);
     var posZ = z % (this.snowCubeWidth / 2);
 
+    var dhBYdx = 0;
+    var dhBYdz = 0;
+
     if (posX + posZ < 1) {
         height3 = snowCube.vertices[1];
         P3x = -this.snowCubeWidth / 2;
         P3z = -this.snowCubeWidth / 2;
+
+        //classic interpolation
+        //dhBYdx = P2x - P3x != 0 ? (height2 - height3)/(P2x - P3x) : 0;
+        //dhBYdz = P1x - P3x != 0 ? (height1 - height3)/(P1x - P3x) : 0;
     } else {
         height3 = snowCube.vertices[7];
         P3x = this.snowCubeWidth / 2;
         P3z = this.snowCubeWidth / 2;
+
+        //classic interpolation
+        //dhBYdx = P3x - P1x != 0 ? (height3 - height1)/(P3x - P1x) : 0;
+        //dhBYdz = P3x - P2x != 0 ? (height3 - height2)/(P3x - P2x) : 0;
     }
+
+    //classic interpolation
+    //return height1 + dhBYdx*(posX - P1x) + dhBYdz*(posZ - P1z);
 
     //Implementirano interpoliranje z baricentricnimi koordinatami
 
@@ -113,11 +127,11 @@ Snow.prototype.getHeight = function (x, z) {
         return false;
     }
 
-    //This will always result in a float, as x and z are floats
-    const weight1 = ((P2z - P3z)*(posX - P3x) + (P3x - P2x)*(posZ - P3z)) /
-                    ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
-    const weight2 = ((P3z - P1z)*(posX - P3x) + (P1x - P3x)*(posZ - P3z)) /
-                    ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
+    //This will always result in a float, as x and z are floats (also, division)
+    const weight1 = ((P2z - P3z) * (posX - P3x) + (P3x - P2x) * (posZ - P3z)) /
+                    ((P2z - P3z) * (P1x - P3x) + (P3x - P2x) * (P1z - P3z));
+    const weight2 = ((P3z - P1z) * (posX - P3x) + (P1x - P3x) * (posZ - P3z)) /
+                    ((P2z - P3z) * (P1x - P3x) + (P3x - P2x) * (P1z - P3z));
     const weight3 = 1 - weight1 - weight2;
 
     return ((height1 * weight1) + (height2 * weight2) + (height3 * weight3)) /
