@@ -48,7 +48,6 @@ function VisibleObject() {
 	//	-call this.findHeight() and this.findRadius() if object is collidable
 	//	-GRAPHICS.loadObjectVertices(this)
 	///////////////////////////////////////////////////////////////////////////////////////
-
 }
 
 VisibleObject.prototype.loadModel = function (path) {
@@ -64,6 +63,16 @@ VisibleObject.prototype.loadModel = function (path) {
 
 	//Running from local (non-server) will trigger CORS, JSON.parse
 	//will fail on an empty request.responseText string with SintaxError
+};
+
+VisibleObject.prototype.loadColors = function (colorsArray, verticesByColor) {
+
+    this.colors = [];
+    for (var n = 0; n < verticesByColor.length; n++) {
+        for (let i = 0; i < verticesByColor[n]; i++) {
+            this.colors = this.colors.concat(colorsArray[n]);
+        }
+    }
 };
 
 VisibleObject.prototype.setPosition = function (newPosition) {

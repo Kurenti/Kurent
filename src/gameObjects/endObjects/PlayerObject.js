@@ -6,8 +6,8 @@
 function PlayerObject (controls) {
 	this.controls = controls;
 
-	//this.loadModel("assets/models/kurent.json");
-	this.loadVertices();
+	this.loadModel("assets/models/kurent.json");
+	//this.loadVertices();
 
 	this.setPosition([5.0, 0.0, 3.0]);	//Y position is set appropriately only after objHeight is calculated
 	this.setAngle(0.0);
@@ -20,10 +20,15 @@ PlayerObject.prototype = new CollidableObject();
 PlayerObject.prototype.handleLoadedModel = function (data) {
 
 	this.vertices = data.vertices;
-    this.colors = [
-        [0.937, 0.902, 0.727, 1.0] // Beige
-    ];
     this.nVertices = this.vertices.length / 3;
+	//Construct colors list from data["verticesByColor"] numbers and by manually reading .mtl file
+    this.loadColors([
+            [0.413866, 0.392996, 0.252348, 1.0],
+            [0.640000, 0.005496, 0.022123, 1.0],
+            [0.031744, 0.007907, 0.017131, 1.0],
+            [0.529491, 0.451677, 0.437904, 1.0]
+        ],
+        data.verticesByColor);
     //This is a last resort measure: to avoid double shaders for textured/untextured
 	//every object needs a valid array object.textureCoords of length nVertices * 2
     this.textureCoords = new Array(this.nVertices * 2).fill(0.0);

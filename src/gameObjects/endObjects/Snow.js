@@ -220,11 +220,11 @@ Snow.prototype.makeNormals = function (snowCubicle) {
     vec3.normalize(normalTL, normalTL);
     vec3.normalize(normalBR, normalBR);
     var vertexNormals = [];
-    vertexNormals.concat(normalTL);
-    vertexNormals.concat(normalTL);
-    vertexNormals.concat(normalBR);
-    vertexNormals.concat(normalTL);
-    vertexNormals.concat(normalBR);
-    vertexNormals.concat(normalBR);
+    vertexNormals = vertexNormals.concat(normalTL);
+    vertexNormals = vertexNormals.concat(normalTL);
+    vertexNormals = vertexNormals.concat(normalBR);
+    vertexNormals = vertexNormals.concat(normalTL);
+    vertexNormals = vertexNormals.concat(normalBR);
+    vertexNormals = vertexNormals.concat(normalBR);
     return vertexNormals;
 };

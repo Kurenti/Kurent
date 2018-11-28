@@ -183,13 +183,22 @@ Graphics.prototype.loadObjectVertices = function (object) {
         console.log("Can't load vertex colors: colors array wrong size");
     }
 
+    //Serious models have the colors list already of appropriate length
     var unpackedColors = [];
-    for (var i in object.colors) {
-        var color = object.colors[i];
-        for (var j=0; j < object.nVertices / object.colors.length; j++) {
-            unpackedColors = unpackedColors.concat(color);
+    if (object.nVertices === object.colors.length) {
+        unpackedColors = object.colors;
+    } else {
+    //For other objects use the exercise way of unpacking colors
+    //(usually colors will just be an array of one color)
+        for (var i in object.colors) {
+            var color = object.colors[i];
+            for (var j = 0; j < object.nVertices / object.colors.length; j++) {
+                unpackedColors = unpackedColors.concat(color);
+            }
         }
     }
+    console.log(object.colors.length);
+    console.log(object.nVertices * 4);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(unpackedColors), this.gl.STATIC_DRAW);
     object.vertexColorBuffer.itemSize = 4;
     object.vertexColorBuffer.numItems = object.nVertices;
