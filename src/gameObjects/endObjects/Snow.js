@@ -56,6 +56,11 @@ Snow.prototype.meltAt = function (position, strength, elapsedTime) {
                         changedCube.vertices[vert] -= change * (1 - vertDistance / radius);
                     }
                 }
+
+                //Recalculate normals
+                var vertexNormals = this.makeNormals(changedCube);
+
+                //This needs to also move normals in the future
                 GRAPHICS.moveVertices(changedCube.vertexPositionBuffer, changedCube.vertices);
             }
         }
@@ -179,6 +184,8 @@ Snow.prototype.makeSnowCubicle = function (position, width) {
     snowCubicle.nVertices = 4;
     //Make dynamic
     snowCubicle.dynamicVertices = true;
+    //Set up normals
+    var vertexNormals = this.makeNormals(snowCubicle);
     //Make white, just white
     snowCubicle.colors = [[1.0, 1.0, 1.0, 1.0]];
     snowCubicle.textureCoords = new Array(snowCubicle.nVertices * 2).fill(0.0);
@@ -194,4 +201,23 @@ Snow.prototype.makeSnowCubicle = function (position, width) {
     GRAPHICS.loadObjectVertices(snowCubicle);
 
     return snowCubicle;
+};
+
+Snow.prototype.makeNormals = function (snowCubicle) {
+    const width = this.snowCubeWidth / 2.0;
+
+    var normalTL = vec3.create();   //top-left
+    var normalBR = vec3.create();   //bot-right
+    vec3.cross(normalTL, vec3.fromValues(0.0,snowCubicle.vertices[4] - snowCubicle.vertices[1], width*2.0),
+                         vec3.fromValues(width*2.0, snowCubicle.vertices[10] - snowCubicle.vertices[1], 0.0));
+    vec3.cross(normalBR, vec3.fromValues(0.0, snowCubicle.vertices[10] - snowCubicle.vertices[7], width*2.0),
+                         vec3.fromValues(width*2.0, snowCubicle.vertices[4] - snowCubicle.vertices[7], 0.0));
+    vec3.normalize(normalTL, normalTL);
+    vec3.normalize(normalBR, normalBR);
+    var vertexNormals = [];
+    vertexNormals.concat(normalTL);
+    vertexNormals.concat(normalTL);
+    vertexNormals.concat(normalBR);
+    vertexNormals.concat(normalTL);
+    return vertexNormals;
 };

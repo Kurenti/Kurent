@@ -119,6 +119,7 @@ Landscape.prototype.getHeight = function (x, z) {
 		P3z = Math.floor(z);
         height3 = this.getPixelHeight(P3x, P3z);
 
+        //classic interpolation
         //dhBYdx = P2x - P3x != 0 ? (height2 - height3)/(P2x - P3x) : 0;
         //dhBYdz = P1x - P3x != 0 ? (height1 - height3)/(P1x - P3x) : 0;
 	} else {
@@ -126,10 +127,12 @@ Landscape.prototype.getHeight = function (x, z) {
 		P3z = Math.ceil(z);
         height3 = this.getPixelHeight(P3x, P3z);
 
+        //classic interpolation
         //dhBYdx = P3x - P1x != 0 ? (height3 - height1)/(P3x - P1x) : 0;
         //dhBYdz = P3x - P2x != 0 ? (height3 - height2)/(P3x - P2x) : 0;
 	}
 
+    //classic interpolation
     //const landscapeHeight = height1 + dhBYdx*(x - P1x) + dhBYdz*(z - P1z);
 
 	//Implementirano interpoliranje z baricentricnimi koordinatami - klasicno
