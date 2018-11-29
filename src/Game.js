@@ -10,7 +10,7 @@ function Game() {
 
     // Gamestate-i:
     this.gameStates = {
-        startMenu: new GameState_Menu(this.canvas),
+        menu: new GameState_Menu(),
         playing: new GameState_Playing(),
         exiting: new GameState_Exiting()
     };
@@ -55,21 +55,26 @@ Game.prototype.resetTime = function () {
 // Funkcije za prehajanje med fazami igre - prehod je izveden sele ob koncu gameloopa
 Game.prototype.toMenu = function () {
     this.newGameState = this.gameStates.Menu;
+    this.newGameState.showHide(true);
 };
 
 Game.prototype.toPlaying = function () {
+    if(this.currentGameState === this.gameStates.menu) {
+        this.currentGameState.showHide(false);
+    }
     this.newGameState = this.gameStates.Playing;
 };
 
 Game.prototype.toExiting = function () {
+    if(this.currentGameState === this.gameStates.menu) {
+        this.currentGameState.showHide(false);
+    }
     this.newGameState = this.gameStates.Exiting;
 };
 
 Game.prototype.setGameState = function () {
     if (this.newGameState !== this.currentGameState) {
-
         this.currentGameState = this.newGameState;
-
         this.currentGameState.call();
     }
 };

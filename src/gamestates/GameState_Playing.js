@@ -36,8 +36,3 @@ GameState_Playing.prototype.draw = function () {
 	GRAPHICS.setUpDraw();
 	GAME_OBJECT_MANAGER.drawAll();
 };
-
-GameState_Playing.prototype.destroy = function() {
-    // Remove keyboard listener
-    this.controls.removeListener();
-};

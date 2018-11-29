@@ -14,10 +14,21 @@
         Računalniška grafika in tehnologija iger
     </h3>
     <div><label for="fixCamera">Fix camera: </label><input type="checkbox" id="fixCamera"></div>
-    <canvas id="canvas" width="1240px" height="720px">
-        <!-- printed if canvas not initialized -->
-        You are using a retard browser, change to something modern.
-    </canvas>
+    <div id="menu-container">
+        <canvas id="canvas" width="1240px" height="720px">
+            <!-- printed if canvas not initialized -->
+            You are using a retard browser, change to something modern.
+        </canvas>
+        <div id="overlay">
+            <div class="menu-item">
+                <a href="#" class="myButton">New game</a>
+            </div>
+            <div class="menu-item">
+                <a href="#" class="myButton">Options</a>
+            </div>
+        </div>
+    </div>
+
     <p class="signature">
         Andraž Krašovec, Bibi Erjavec in Jakob Turk
     </p>
@@ -69,6 +80,7 @@ quite a bit -->
             gl_FragColor = vec4(vColor.rgb * vLightWeighting, vColor.a);
         }
     }
+
 </script>
 
 <script id="shader-vs" type="x-shader/x-vertex">
@@ -102,6 +114,7 @@ quite a bit -->
         float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
         vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
     }
+
 
 </script>
 
