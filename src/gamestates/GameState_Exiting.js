@@ -13,5 +13,3 @@ GameState_Exiting.prototype.call = function () {};
 GameState_Exiting.prototype.update = function (elapsedTime) {};
 
 GameState_Exiting.prototype.draw = function () {};
-
-GameState_Exiting.prototype.destroy = function() {};
