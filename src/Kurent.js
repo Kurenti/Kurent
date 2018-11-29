@@ -3,8 +3,11 @@
 // Osnovni script klican iz .html-ja
 ////////////////////////////////////
 
+//Globals - asigned in Game contructor
 var GAME;
-var CANVAS;
+var GRAPHICS;
+var GAME_OBJECT_MANAGER;
+var CONTROLS;
 
 function start() {
 	

@@ -23,13 +23,24 @@ body {
     position: relative;
 }
 
-#overlay {
+#menuOverlay {
     position: absolute;
-    left: 520px;
-    top: 50px;
-    color: black;
+    left: 0px;
+    top: 0px;
+    background: black;
+    color: white;
     font-size: 32px;
-    display: block;
+    display: none;
+}
+
+#loadOverlay {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background: black;
+    color: white;
+    font-size: 32px;
+    display: none;
 }
 
 .menu-item {

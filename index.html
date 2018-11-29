@@ -19,13 +19,17 @@
             <!-- printed if canvas not initialized -->
             You are using a retard browser, change to something modern.
         </canvas>
-        <div id="overlay">
+        <!-- Both overlays need their size set to size of canvas -->
+        <div id="menuOverlay">
             <div class="menu-item">
-                <a href="#" class="myButton">New game</a>
+                <a class="myButton" id="buttonNewGame">New game</a>
             </div>
             <div class="menu-item">
-                <a href="#" class="myButton">Options</a>
+                <a class="myButton" id="buttonOptions">Options</a>
             </div>
+        </div>
+        <div id="loadOverlay">
+            Loading
         </div>
     </div>
 
@@ -44,8 +48,9 @@
 <script src="./src/Graphics.js" type="text/javascript"></script>
 <script src="./src/GameObjectManager.js" type="text/javascript"></script>
 <script src="./src/gamestates/GameState.js" type="text/javascript"></script>
-<script src="./src/gamestates/GameState_Playing.js" type="text/javascript"></script>
 <script src="./src/gamestates/GameState_Menu.js" type="text/javascript"></script>
+<script src="./src/gamestates/GameState_Load.js" type="text/javascript"></script>
+<script src="./src/gamestates/GameState_Playing.js" type="text/javascript"></script>
 <script src="./src/gamestates/GameState_Exiting.js" type="text/javascript"></script>
 <script src="./src/inputs/Keyboard.js" type="text/javascript"></script>
 <script src="./src/inputs/Mouse.js" type="text/javascript"></script>

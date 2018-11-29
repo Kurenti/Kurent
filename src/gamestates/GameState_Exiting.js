@@ -6,9 +6,11 @@
 
 function GameState_Exiting () {
 }
-GameState_Exiting.prototype = new GameState(GameStateTtype.Exiting);
+GameState_Exiting.prototype = new GameState(GameStateType.Exiting);
 
 GameState_Exiting.prototype.call = function () {};
+
+GameState_Exiting.prototype.dismiss = function () {};
 
 GameState_Exiting.prototype.update = function (elapsedTime) {};
 

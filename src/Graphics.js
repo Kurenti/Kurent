@@ -197,7 +197,6 @@ Graphics.prototype.loadObjectVertices = function (object) {
     //Serious models have the colors list already of appropriate length
     var unpackedColors = [];
     if (4*object.nVertices === object.colors.length) {
-        console.log("done it");
         unpackedColors = object.colors;
     } else {
         //For other objects use the exercise way of unpacking colors

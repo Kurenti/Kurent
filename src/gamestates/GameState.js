@@ -6,10 +6,11 @@
 /////////////////////////////////////////
 
 // enum z imeni GameStatov, da niso stringi...
-var GameStateTtype = {
+var GameStateType = {
 	Menu: 1,
-	Playing: 2,
-	Exiting: 3
+	Load: 2,
+	Playing: 3,
+	Exiting: 4
 };
 
 function GameState(type) {

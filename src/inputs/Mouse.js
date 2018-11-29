@@ -4,7 +4,7 @@
 // za navigacijo po menijih.
 ///////////////////////////////////////////
 
-function Mouse(canvas) {
+function Mouse() {
     this.canvas = GRAPHICS.canvas;
     this.pressed = false;
     this.lastX = 0;

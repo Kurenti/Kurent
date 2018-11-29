@@ -29,6 +29,9 @@ function GameObjectManager () {
 	this.collidableObjects = [];
     this.landscape = false;
     this.snow = false;
+
+    //Loader flag
+	this.loaded = false;
 }
 
 GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) {
@@ -45,8 +48,16 @@ GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) 
 
 		case ObjectTypes.Snow:
 			this.snow = object;
+            this.loaded = true;
 			break;
 	}
+};
+
+GameObjectManager.prototype.empty = function () {
+    this.gameObjects = [];
+    this.collidableObjects = [];
+    this.landscape = false;
+    this.snow = false;
 };
 
 GameObjectManager.prototype.getLandscape = function () {
