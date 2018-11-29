@@ -190,7 +190,8 @@ Snow.prototype.makeSnowCubicle = function (position, width) {
     //Make dynamic
     snowCubicle.dynamicVertices = true;
     //Set up normals
-    var vertexNormals = this.makeNormals(snowCubicle);
+    snowCubicle.vertexNormals = this.makeNormals(snowCubicle);
+    snowCubicle.nNormals = snowCubicle.vertexNormals.length;
     //Make white, just white
     snowCubicle.colors = [[1.0, 1.0, 1.0, 1.0]];
     snowCubicle.textureCoords = new Array(snowCubicle.nVertices * 2).fill(0.0);
@@ -226,5 +227,6 @@ Snow.prototype.makeNormals = function (snowCubicle) {
     vertexNormals = vertexNormals.concat(normalTL);
     vertexNormals = vertexNormals.concat(normalBR);
     vertexNormals = vertexNormals.concat(normalBR);
+    vertexNormals = vertexNormals.join().split(",");
     return vertexNormals;
 };

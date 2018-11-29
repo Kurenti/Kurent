@@ -107,11 +107,15 @@ Graphics.prototype.initShaders = function () {
     this.shaderProgram.textureCoordAttribute = this.gl.getAttribLocation(this.shaderProgram, "aTextureCoord");
     this.gl.enableVertexAttribArray(this.shaderProgram.textureCoordAttribute);
 
+    this.shaderProgram.vertexNormalAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexNormal");
+    this.gl.enableVertexAttribArray(this.shaderProgram.vertexNormalAttribute);
+
     this.shaderProgram.vertexColorAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexColor");
     this.gl.enableVertexAttribArray(this.shaderProgram.vertexColorAttribute);
 
     this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uPMatrix");
     this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
+    this.shaderProgram.nMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uNMatrix");
     this.shaderProgram.samplerUniform = this.gl.getUniformLocation(this.shaderProgram, "uSampler");
     this.shaderProgram.useTexturesUniform = this.gl.getUniformLocation(this.shaderProgram, "uUseTextures");
 
@@ -137,6 +141,10 @@ Graphics.prototype.mvPopMatrix = function () {
 Graphics.prototype.setMatrixUniforms = function () {
     this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.pMatrix);
     this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
+
+    var normalMatrix = mat3.create();
+    mat3.normalFromMat4(normalMatrix, this.mvMatrix);
+    this.gl.uniformMatrix3fv(this.shaderProgram.nMatrixUniform, false, normalMatrix);
 };
 
 Graphics.prototype.setUpDraw = function () {
@@ -167,6 +175,13 @@ Graphics.prototype.loadObjectVertices = function (object) {
     }
     object.vertexPositionBuffer.itemSize = 3;
     object.vertexPositionBuffer.numItems = object.nVertices;
+
+    // Normals
+    object.normalsBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.normalsBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.vertexNormals), this.gl.STATIC_DRAW);
+    object.normalsBuffer.itemSize = 3;
+    object.normalsBuffer.numItems = object.nNormals;
 
     // Textures
     object.vertexTextureCoordBuffer = this.gl.createBuffer();
@@ -244,7 +259,6 @@ Graphics.prototype.moveVertices = function (vertexBuffer, vertices) {
 
 // Function that lets a visible object draw itself
 Graphics.prototype.drawObject = function (object) {
-
     this.gl.uniform1i(this.shaderProgram.useTexturesUniform, object.hasTextures);
 
 	// Init to origin
@@ -287,18 +301,17 @@ Graphics.prototype.drawObject = function (object) {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexColorBuffer);
     this.gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
+    // Normals
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.normalsBuffer);
+    this.gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, object.normalsBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+
     // Faces
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
     this.setMatrixUniforms();
     this.gl.drawElements(this.gl.TRIANGLES, object.vertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
 
-    // Normals
-    //TODO//
-
     this.mvPopMatrix();
-}
-
-
+};
 
 ///////////////////////
 // Viewport

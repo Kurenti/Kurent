@@ -135,7 +135,7 @@ Landscape.prototype.handleLandscapeStrip = function (context, k) {
         }
 	}
 
-    //console.log(landscapeStrip.vertexNormals);
+    landscapeStrip.nNormals = landscapeStrip.vertexNormals.length / 3;
 
     //This is a last resort measure: to avoid double shaders for textured/untextured
     //every object needs a valid array object.textureCoords of length nVertices * 2
