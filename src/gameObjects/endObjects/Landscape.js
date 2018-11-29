@@ -67,7 +67,6 @@ Landscape.prototype.handleLandscapeStrip = function (context, k) {
 
     // Create a new generic visibleObject
     var landscapeStrip = new VisibleObject();
-    landscapeStrip.vertexNormals = [];
 
     // Move strip to appropriate Z
     landscapeStrip.setPosition([0, 0, k*this.stripDepth]);
@@ -134,8 +133,6 @@ Landscape.prototype.handleLandscapeStrip = function (context, k) {
         	]);
         }
 	}
-
-    landscapeStrip.nNormals = landscapeStrip.vertexNormals.length / 3;
 
     //This is a last resort measure: to avoid double shaders for textured/untextured
     //every object needs a valid array object.textureCoords of length nVertices * 2

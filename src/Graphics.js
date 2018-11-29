@@ -177,11 +177,11 @@ Graphics.prototype.loadObjectVertices = function (object) {
     object.vertexPositionBuffer.numItems = object.nVertices;
 
     // Normals
-    object.normalsBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.normalsBuffer);
+    object.vertexNormalsBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexNormalsBuffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(object.vertexNormals), this.gl.STATIC_DRAW);
-    object.normalsBuffer.itemSize = 3;
-    object.normalsBuffer.numItems = object.nNormals;
+    object.vertexNormalsBuffer.itemSize = 3;
+    object.vertexNormalsBuffer.numItems = object.nVertices;
 
     // Textures
     object.vertexTextureCoordBuffer = this.gl.createBuffer();
@@ -194,17 +194,19 @@ Graphics.prototype.loadObjectVertices = function (object) {
     object.vertexColorBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexColorBuffer);
 
-    if (object.nVertices % object.colors.length !== 0) {
-        console.log("Can't load vertex colors: colors array wrong size");
-    }
-
     //Serious models have the colors list already of appropriate length
     var unpackedColors = [];
-    if (object.nVertices === object.colors.length) {
+    if (4*object.nVertices === object.colors.length) {
+        console.log("done it");
         unpackedColors = object.colors;
     } else {
-    //For other objects use the exercise way of unpacking colors
-    //(usually colors will just be an array of one color)
+        //For other objects use the exercise way of unpacking colors
+        //(usually colors will just be an array of one color)
+
+        if (object.nVertices % object.colors.length !== 0) {
+            console.log("Can't load vertex colors: colors array wrong size");
+        }
+
         for (var i in object.colors) {
             var color = object.colors[i];
             for (var j = 0; j < object.nVertices / object.colors.length; j++) {
@@ -302,8 +304,8 @@ Graphics.prototype.drawObject = function (object) {
     this.gl.vertexAttribPointer(this.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
     // Normals
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.normalsBuffer);
-    this.gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, object.normalsBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, object.vertexNormalsBuffer);
+    this.gl.vertexAttribPointer(this.shaderProgram.vertexNormalAttribute, object.vertexNormalsBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
     // Faces
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);

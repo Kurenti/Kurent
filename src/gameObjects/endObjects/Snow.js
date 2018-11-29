@@ -191,7 +191,6 @@ Snow.prototype.makeSnowCubicle = function (position, width) {
     snowCubicle.dynamicVertices = true;
     //Set up normals
     snowCubicle.vertexNormals = this.makeNormals(snowCubicle);
-    snowCubicle.nNormals = snowCubicle.vertexNormals.length;
     //Make white, just white
     snowCubicle.colors = [[1.0, 1.0, 1.0, 1.0]];
     snowCubicle.textureCoords = new Array(snowCubicle.nVertices * 2).fill(0.0);
@@ -221,12 +220,11 @@ Snow.prototype.makeNormals = function (snowCubicle) {
     vec3.normalize(normalTL, normalTL);
     vec3.normalize(normalBR, normalBR);
     var vertexNormals = [];
-    vertexNormals = vertexNormals.concat(normalTL);
-    vertexNormals = vertexNormals.concat(normalTL);
-    vertexNormals = vertexNormals.concat(normalBR);
-    vertexNormals = vertexNormals.concat(normalTL);
-    vertexNormals = vertexNormals.concat(normalBR);
-    vertexNormals = vertexNormals.concat(normalBR);
-    vertexNormals = vertexNormals.join().split(",");
+    vertexNormals = vertexNormals.concat([normalTL[0], normalTL[1], normalTL[2]]);
+    vertexNormals = vertexNormals.concat([normalTL[0], normalTL[1], normalTL[2]]);
+    vertexNormals = vertexNormals.concat([normalBR[0], normalBR[1], normalBR[2]]);
+    vertexNormals = vertexNormals.concat([normalTL[0], normalTL[1], normalTL[2]]);
+    vertexNormals = vertexNormals.concat([normalBR[0], normalBR[1], normalBR[2]]);
+    vertexNormals = vertexNormals.concat([normalBR[0], normalBR[1], normalBR[2]]);
     return vertexNormals;
 };

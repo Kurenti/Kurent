@@ -6,8 +6,8 @@
 function PlayerObject (controls) {
 	this.controls = controls;
 
-	//this.loadModel("assets/models/kurent.json");
-	this.loadVertices();
+	this.loadModel("assets/models/kurent.json");
+	//this.loadVertices();
 
 	this.setPosition([5.0, 0.0, 3.0]);	//Y position is set appropriately only after objHeight is calculated
 	this.setAngle(0.0);
@@ -34,7 +34,7 @@ PlayerObject.prototype.handleLoadedModel = function (data) {
     this.textureCoords = new Array(this.nVertices * 2).fill(0.0);
 
     //Get normals
-    var vertexNormals = data.vertexNormals;
+    this.vertexNormals = data.vertexNormals;
 
     //Get triangles
     this.vertexIndices = data.faces;
@@ -135,6 +135,43 @@ PlayerObject.prototype.loadVertices = function () {
         -1.0,  1.0,  1.0,
         -1.0,  1.0, -1.0
     ];
+    this.vertexNormals = [
+        // Front face
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+
+        // Back face
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+
+        // Top face
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+
+        // Bottom face
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+
+        // Right face
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+
+        // Left face
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0
+    ];
     this.colors = [
         [1.0, 0.0, 0.0, 1.0], // Front face
         [1.0, 1.0, 0.0, 1.0], // Back face
@@ -191,46 +228,6 @@ PlayerObject.prototype.loadVertices = function () {
         20, 21, 22,   20, 22, 23  // Left face
     ];
     this.nVertexIndices = 36;
-
-    this.vertexNormals = [
-        // Front face
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-
-        // Back face
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-
-        // Top face
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-
-        // Bottom face
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-
-        // Right face
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-
-        // Left face
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0
-    ];
-
-    this.nNormals = 24;
 
     this.findHeight();
     this.findRadius();

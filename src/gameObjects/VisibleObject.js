@@ -13,11 +13,13 @@ function VisibleObject() {
 	this.dynamicVertices = false;
 	this.vertexIndices = [];
 	this.nVertexIndices = 0;
+	this.vertexNormals = [];
 	this.hasTextures = false;
 	this.textureCoords = [];
 	this.texture;
 	this.vertexPositionBuffer;
 	this.vertexColorBuffer;
+	this.vertexNormalsBuffer;
 	this.vertexTextureCoordBuffer;
 	this.vertexIndexBuffer;
 
@@ -38,6 +40,7 @@ function VisibleObject() {
 	//	-fill this.vertices with vertices
 	//	-parse colors into this.colors; even if the object uses textures,
 	//	 this.colors needs to have at least one color in it
+	//	-fill this.vertexNormals with normals (length is nVertices)
 	//	-fill this.textureCoords; even if the objects only uses colors,
 	//	 this.textureCoords needs to be a valid array of exactly length
 	//	 nVertices * 2 (fill it with 0, if no actual textures)
