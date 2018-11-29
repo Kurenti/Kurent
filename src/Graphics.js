@@ -197,8 +197,6 @@ Graphics.prototype.loadObjectVertices = function (object) {
             }
         }
     }
-    console.log(object.colors.length);
-    console.log(object.nVertices * 4);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(unpackedColors), this.gl.STATIC_DRAW);
     object.vertexColorBuffer.itemSize = 4;
     object.vertexColorBuffer.numItems = object.nVertices;

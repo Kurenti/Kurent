@@ -1,5 +1,7 @@
 ###########################################
 # HeightmapReader.py_______________________
+# THIS SCRIPT IS NOW OBSOLETE AS THIS IS
+# ALREADY DONE AT RUNTIME IN JAVASCRIPT
 # A quick python script that reads an image
 # heightmap and saves it as json
 ###########################################
