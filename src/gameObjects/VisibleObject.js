@@ -23,6 +23,7 @@ function VisibleObject() {
 	this.vertexTextureCoordBuffer;
 	this.vertexIndexBuffer;
 
+	this.scale = 1.0;
 	this.position = [0.0, 0.0, 0.0];
 	this.yaw = 0.0;
 	this.pitch = 0.0;
@@ -38,13 +39,13 @@ function VisibleObject() {
 	//	contains the gameplay stuff
 	//loadVertices():
 	//	-fill this.vertices with vertices
+    //	-set this.nVertices to n of vertices
 	//	-parse colors into this.colors; even if the object uses textures,
 	//	 this.colors needs to have at least one color in it
 	//	-fill this.vertexNormals with normals (length is nVertices)
 	//	-fill this.textureCoords; even if the objects only uses colors,
 	//	 this.textureCoords needs to be a valid array of exactly length
 	//	 nVertices * 2 (fill it with 0, if no actual textures)
-	//	-set this.nVertices to n of vertices
 	//	-call GRAPHICS.loadTexture(this, texturePath) if (and only if) object has a texture
 	//	-fill this.vertexIndices
 	//	-set this.nVertexIndices to n of vert indices

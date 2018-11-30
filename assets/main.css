@@ -25,8 +25,8 @@ body {
 
 #menuOverlay {
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 0;
+    top: 0;
     background: black;
     color: white;
     font-size: 32px;
@@ -35,8 +35,8 @@ body {
 
 #loadOverlay {
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 0;
+    top: 0;
     background: black;
     color: white;
     font-size: 32px;

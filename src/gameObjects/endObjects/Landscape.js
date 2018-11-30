@@ -51,6 +51,7 @@ Landscape.prototype.loadModel = function (path) {
 
 		//After the landscape is loaded, cover it with snow!
         GAME_OBJECT_MANAGER.add(new Snow(), ObjectTypes.Snow);
+		GAME_OBJECT_MANAGER.landscapeLoaded = true;
 
 	}.bind(this);
     heightmap.src = "assets/heightmap/testHeightmap64.bmp";
@@ -147,7 +148,7 @@ Landscape.prototype.handleLandscapeStrip = function (context, k) {
     return moreStrips;
 };
 
-Landscape.prototype.getHeight = function (x, z) {
+Landscape.prototype.getHeight = function (x, z, noSnow = false) {
 	//Interpolacija na trikotniku v baricentricnih koordinatah
 
 	if (x < 0 ||
@@ -157,20 +158,24 @@ Landscape.prototype.getHeight = function (x, z) {
 		return false;
 	}
 
-	const P1x = Math.floor(x);
-    const P1z = Math.ceil(z);
-    const P2x = Math.ceil(x);
-    const P2z = Math.floor(z);
+	var P1x = Math.floor(x);
+    var P1z = Math.ceil(z);
+    var P2x = Math.ceil(x);
+    var P2z = Math.floor(z);
 	var P3x = 0;
     var P3z = 0;
     const height1 = this.getPixelHeight(P1x, P1z);
     const height2 = this.getPixelHeight(P2x, P2z);
     var   height3 = 0;
-    var dhBYdx = 0;
-    var dhBYdz = 0;
+    //var dhBYdx = 0;
+    //var dhBYdz = 0;
     if ((x % 1) + (z % 1) < 1) {
 		P3x = Math.floor(x);
 		P3z = Math.floor(z);
+        //floor and ceil can be same (at spawn!), increment ceils
+        if (P3x === P2x) { P2x += 1; }
+        if (P3z === P1z) { P1z += 1; }
+
         height3 = this.getPixelHeight(P3x, P3z);
 
         //classic interpolation
@@ -179,6 +184,10 @@ Landscape.prototype.getHeight = function (x, z) {
 	} else {
 		P3x = Math.ceil(x);
 		P3z = Math.ceil(z);
+        //floor and ceil can be same (at spawn!), increment ceils
+        if (P3x === P1x) { P3x += 1; }
+        if (P3z === P2z) { P3z += 1; }
+
         height3 = this.getPixelHeight(P3x, P3z);
 
         //classic interpolation
@@ -193,26 +202,18 @@ Landscape.prototype.getHeight = function (x, z) {
 	//interpoliranje po weight = 1/dist se je izkazalo za neprimerno, clipping
 	//ob vzponih in padcih
 
-    //Do not divide by 0
-	if (((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z)) === 0 ||
-    	((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z)) === 0) {
-    	return false;
-    }
-
-	//This will always result in a float, as x and z are floats
     const weight1 = ((P2z - P3z)*(x - P3x) + (P3x - P2x)*(z - P3z)) /
 					((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
     const weight2 = ((P3z - P1z)*(x - P3x) + (P1x - P3x)*(z - P3z)) /
 					((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z));
     const weight3 = 1 - weight1 - weight2;
 
-    const landscapeHeight = ((height1 * weight1) + (height2 * weight2) + (height3 * weight3)) /
-    						(weight1 + weight2 + weight3);
+    const landscapeHeight = ((height1 * weight1) + (height2 * weight2) + (height3 * weight3));
 
     var snowHeight = 0;
 
     //If landscape is covered with snow, return height at landscape + snow cover
-	if (GAME_OBJECT_MANAGER.getSnow()) {
+	if (GAME_OBJECT_MANAGER.getSnow() && !noSnow) {
 		snowHeight = GAME_OBJECT_MANAGER.getSnow().getHeight(x, z);
 	}
 

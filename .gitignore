@@ -2,3 +2,6 @@
 .idea/
 #Test heighmap images
 assets/heightmap/images/*
+
+#Blender files
+*.blender1

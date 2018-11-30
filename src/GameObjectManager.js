@@ -31,6 +31,7 @@ function GameObjectManager () {
     this.snow = false;
 
     //Loader flag
+	this.landscapeLoaded = false;
 	this.loaded = false;
 }
 
@@ -48,7 +49,6 @@ GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) 
 
 		case ObjectTypes.Snow:
 			this.snow = object;
-            this.loaded = true;
 			break;
 	}
 };
@@ -58,6 +58,8 @@ GameObjectManager.prototype.empty = function () {
     this.collidableObjects = [];
     this.landscape = false;
     this.snow = false;
+    this.landscapeLoaded = false;
+    this.loaded = false;
 };
 
 GameObjectManager.prototype.getLandscape = function () {

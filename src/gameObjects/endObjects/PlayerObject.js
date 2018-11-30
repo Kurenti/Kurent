@@ -6,12 +6,16 @@
 function PlayerObject (controls) {
 	this.controls = controls;
 
-	this.loadModel("assets/models/kurent.json");
-	//this.loadVertices();
+	//Scale to original model - this is used on load, not when drawing
+	this.scale = 0.15;
 
-	this.setPosition([5.0, 0.0, 3.0]);	//Y position is set appropriately only after objHeight is calculated
-	this.setAngle(0.0);
-	this.setYaw(0.0);
+	this.loadModel("assets/models/kurent.json");
+
+	this.setPosition([(40.0/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth,
+                       0.0,
+                      (18.0/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth]);
+	this.setAngle(120.0);
+	this.setYaw(120.0);
     this.setSpeed(8.0);
     this.setAngularSpeed(100.0);
 }
@@ -19,7 +23,9 @@ PlayerObject.prototype = new CollidableObject();
 
 PlayerObject.prototype.handleLoadedModel = function (data) {
 
-	this.vertices = data.vertices;
+	this.vertices = data.vertices.map( function (x) {
+                        return x*this.scale;
+                    }.bind(this));
     this.nVertices = this.vertices.length / 3;
 	//Construct colors list from data["verticesByColor"] numbers and by manually reading .mtl file
     this.loadColors([
@@ -41,8 +47,11 @@ PlayerObject.prototype.handleLoadedModel = function (data) {
 	this.nVertexIndices = this.vertexIndices.length;
 
     this.findHeight();
+    this.objHeight = 0.9*this.objHeight;    //height must be fixed a little here,
+                                            //no time to fix the actual model loading sadly
     this.findRadius();
     GRAPHICS.loadObjectVertices(this);
+    GAME_OBJECT_MANAGER.loaded = true;
 };
 
 PlayerObject.prototype.update = function (elapsedTime) {
@@ -69,7 +78,7 @@ PlayerObject.prototype.control = function (elapsedTime) {
 PlayerObject.prototype.controlCamera = function () {
 
 	// Set up relative position of camera and rotate around player by yaw
-	var cameraPosition = vec3.fromValues(0.0, 10.0, -20.0);
+	var cameraPosition = vec3.fromValues(0.0, 4.0, -7.0);
 	var cameraYaw = 180.0;
 
 	if (!document.getElementById("fixCamera").checked){

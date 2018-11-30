@@ -10,7 +10,7 @@ function CollidableObject () {
 	this.objRadius = 0.0;
 
 	//Y movement
-	this.freeFallAcceleration = 0.00005;// unit/ms2, fixed
+	this.freeFallAcceleration = 0.0005;// unit/ms2, fixed
 	this.ySpeed = 0.0; 				  // unit/ms
 
 	// Array of vectors of directions in which we can not move
@@ -41,7 +41,7 @@ CollidableObject.prototype.findHeight = function () {
 	const landscape = GAME_OBJECT_MANAGER.getLandscape();
 	if (landscape) {
 		const position = this.getPosition();
-        this.setPosition([position[0], landscape.getHeight(position[0], position[2]) + this.objHeight / 2.0, position[2]]);
+        this.setPosition([position[0], landscape.getHeight(position[0], position[2], true) + this.objHeight / 2.0, position[2]]);
     }
 };
 
@@ -187,6 +187,7 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 	var finalMoveVector = vec3.create();
 
 	vec3.add(movedPosition, this.getPosition(), bestRestrictedMoveVector);
+
 
 	//Moved height can return false if something fails
 	var movedHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(
