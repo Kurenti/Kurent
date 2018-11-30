@@ -5,6 +5,9 @@
 ////////////////////////////////
 
 function GameState_Load () {
+    //Event factory
+    this.eventFactory = new EventFactory();
+
     // Define menu display (controlled by call and dismiss)
     this.loadDisplay = document.getElementById("loadOverlay");
     this.loadDisplay.style.width = String(GRAPHICS.canvas.width);
@@ -32,6 +35,8 @@ GameState_Load.prototype.update = function (elapsedTime) {
 
     //After landscape loaded:
     if (GAME_OBJECT_MANAGER.landscapeLoaded && !this.objectsLoading) {
+
+        // Environment objects
         GAME_OBJECT_MANAGER.add(new Ice([
             38*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
             6.35,
@@ -60,7 +65,23 @@ GameState_Load.prototype.update = function (elapsedTime) {
             50*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
             12*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 3), ObjectTypes.Collidable);
-        GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS), ObjectTypes.Collidable);
+
+        //Triggers
+        this.eventFactory.makeEvent([
+            38*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
+            6.35,
+            33*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)],
+            3*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
+            EventType.Ice);
+        this.eventFactory.makeEvent([
+            50*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
+            15,
+            12*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)],
+            3*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
+            EventType.Bell);
+
+        //Player
+        GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS), ObjectTypes.Player);
 
         this.objectsLoading = true;
     }

@@ -1,10 +1,19 @@
-/////////////////////////////////
-// CollidableObject.js___________
-// An objects that can detect and
+////////////////////////////////
+// CollidableObject.js__________
+// An object that can detect and
 // respond to collision
-/////////////////////////////////
+////////////////////////////////
 
 function CollidableObject () {
+
+	//CollidableObject will have a special child called Trigger
+	//It would be slicker if Collision (this class basically) were a component for
+	//other visible objects (or invisible triggers!), so Trigger wouldn't inherit
+	//all the moving and drawing junk, but time shortage in the end prevented
+	//keeping up with some useful paradigms
+	//This flag marks trigger objects (collision doesn't make a noGoVector if
+	//one object is trigger)
+	this.isTrigger = false;
 
 	this.objHeight = 0.0;
 	this.objRadius = 0.0;
@@ -12,7 +21,6 @@ function CollidableObject () {
 	//Y movement
 	this.freeFallAcceleration = 0.0005;// unit/ms2, fixed
 	this.ySpeed = 0.0; 				  // unit/ms
-
 	this.onSnow = false;	//flag - are we on snow or not
 
 	// Array of vectors of directions in which we can not move
@@ -100,9 +108,17 @@ CollidableObject.prototype.collide = function (secondObject) {
 		var diff2 = vec3.create();
 		vec3.negate(diff2, diff);
 
-		// Update NoGoVectors for both objects
-		this.updateCollisionVector(diff);
-		secondObject.updateCollisionVector(diff2);
+		// Update NoGoVectors for both objects, if none is trigger
+		if (!this.isTrigger && !secondObject.isTrigger) {
+            this.updateCollisionVector(diff);
+            secondObject.updateCollisionVector(diff2);
+        // Else only call the triggers custom updateCollisionVector with the
+		// other object as argument
+        } else if (this.isTrigger) {
+            this.updateCollisionVector(secondObject);
+		} else if (secondObject.isTrigger) {
+            secondObject.updateCollisionVector(this);
+		}
 	}
 };
 
