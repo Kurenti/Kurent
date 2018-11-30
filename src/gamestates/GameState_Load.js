@@ -25,6 +25,7 @@ GameState_Load.prototype.call = function () {
 
 GameState_Load.prototype.dismiss = function () {
     this.loadDisplay.style.display = "none";
+    this.objectsLoading = false;
 };
 
 GameState_Load.prototype.update = function (elapsedTime) {

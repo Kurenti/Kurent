@@ -17,6 +17,7 @@ function Game() {
         menu: new GameState_Menu(),
         load: new GameState_Load(),
         playing: new GameState_Playing(),
+        pause: new GameState_Pause(),
         exiting: new GameState_Exiting()
     };
     this.currentGameState = this.gameStates.menu;
@@ -76,6 +77,10 @@ Game.prototype.toLoad = function () {
 
 Game.prototype.toPlaying = function () {
     GAME.newGameState = GAME.gameStates.playing;
+};
+
+Game.prototype.toPause = function () {
+    GAME.newGameState = GAME.gameStates.pause;
 };
 
 Game.prototype.toExiting = function () {

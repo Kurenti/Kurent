@@ -10,7 +10,8 @@ var GameStateType = {
 	Menu: 1,
 	Load: 2,
 	Playing: 3,
-	Exiting: 4
+	Pause: 4,
+	Exiting: 5
 };
 
 function GameState(type) {

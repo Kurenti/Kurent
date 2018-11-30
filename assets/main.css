@@ -43,6 +43,17 @@ body {
     display: none;
 }
 
+#pauseOverlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: black;
+    opacity: 0.6; /*ok so that can't be overriden it seems...*/
+    color: white;
+    font-size: 32px;
+    display: none;
+}
+
 .menu-item {
 }
 
