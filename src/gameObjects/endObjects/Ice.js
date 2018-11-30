@@ -3,10 +3,10 @@
 // Object controling the deathly ice in game
 ////////////////////////////////////////////
 
-function Ice (position) {
+function Ice (position, width) {
 
 
-    this.width = 8*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0);
+    this.width = width*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0);
 
     this.loadVertices(position);
 }
@@ -34,7 +34,7 @@ Ice.prototype.loadVertices = function (position) {
         0, 1, 0
     ];
     //Make light blue
-    this.colors = [[0.8, 0.9312, 1.0, 1.0]];
+    this.colors = [[0.72, 0.8, 1.0, 1.0]];
     this.textureCoords = new Array(this.nVertices * 2).fill(0.0);
     //Set up indices
     this.vertexIndices = [

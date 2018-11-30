@@ -41,6 +41,7 @@ function PlayerObject (controls, firstBell) {
 
     // Falling in lake
     this.fallenInLake = false;
+    this.deathTimer = 0.0;
 
     //Interaction - implemented very unscalably, lack time for more
     this.nearBell = false;
@@ -87,7 +88,13 @@ PlayerObject.prototype.update = function (elapsedTime) {
     //////////
     //If dead just drift into lake
     if (this.fallenInLake) {
+        //Change this to move in direction to center lake
         this.moveInDirection(elapsedTime, 0,0.3);
+        this.deathTimer += elapsedTime / 1000; //elapsedTime in ms
+
+        if (this.deathTimer > 2.0) {
+            GAME.toPause();
+        }
         return;
     }
 
@@ -177,6 +184,12 @@ PlayerObject.prototype.update = function (elapsedTime) {
     this.nearVillagers = false;
 };
 
+//Function that deals with death - this happens during collision!
+PlayerObject.prototype.fallInLake = function () {
+    this.fallenInLake = true;
+};
+
+//Function that deals with moving the character
 PlayerObject.prototype.control = function (elapsedTime, movementFix = 1) {
 
     if (this.onSnow) {
@@ -191,6 +204,7 @@ PlayerObject.prototype.control = function (elapsedTime, movementFix = 1) {
 	this.controlCamera();
 };
 
+//Function that moves the 3rd person camera
 PlayerObject.prototype.controlCamera = function () {
 
 	// Set up relative position of camera and rotate around player by yaw
@@ -217,10 +231,4 @@ PlayerObject.prototype.controlCamera = function () {
 	GRAPHICS.viewport.setYaw(cameraYaw);
 	GRAPHICS.viewport.setPitch(15.0);
 
-};
-
-//Function that deals with death - this happens during collision!
-PlayerObject.prototype.fallInLake = function () {
-    console.log("umrl");
-    this.fallenInLake = true;
 };

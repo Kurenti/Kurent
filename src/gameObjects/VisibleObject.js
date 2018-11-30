@@ -88,15 +88,9 @@ VisibleObject.prototype.setYaw = function (newAngle) {
 };
 
 VisibleObject.prototype.moveForVector = function (moveVector) {
-	// this is useless, TODO: use some kind of sleek and slim 3D vector
 	for (var i = 0; i < 3; i++) {
 		this.position[i] += moveVector[i];
 	}
-};
-
-VisibleObject.prototype.rotateYaw = function (angle) {
-	this.yaw += angle;
-    this.yaw = this.yaw % 360.0;
 };
 
 VisibleObject.prototype.getPosition = function () {

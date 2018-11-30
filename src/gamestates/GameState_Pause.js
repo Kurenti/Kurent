@@ -15,12 +15,17 @@ GameState_Pause.prototype = new GameState(GameStateType.Pause);
 GameState_Pause.prototype.call = function () {
     this.pauseDisplay.style.display = "block";
 
-    console.log("here");
-
     // Assign actions to buttons
     //This cannot be done in constructor already, because all gamestates are not defined yet
-    document.getElementById("buttonResume").onclick = GAME.toPlaying;
     document.getElementById("buttonExitToMenu").onclick = GAME.toMenu;
+    if (GAME_OBJECT_MANAGER.getPlayer().fallenInLake) {
+        document.getElementById("deathNote").style.display = "block";
+        document.getElementById("buttonResume").style.display = "none";
+    } else {
+        document.getElementById("deathNote").style.display = "none";
+        document.getElementById("buttonResume").style.display = "block";
+        document.getElementById("buttonResume").onclick = GAME.toPlaying;
+    }
 };
 
 GameState_Pause.prototype.dismiss = function () {

@@ -41,6 +41,8 @@ GameState_Playing.prototype.call = function () {
 };
 
 GameState_Playing.prototype.dismiss = function () {
+    this.hintDisplay.style.display = "none";
+    this.totalTime = 0;
 };
 
 GameState_Playing.prototype.update = function (elapsedTime) {

@@ -211,8 +211,7 @@ Landscape.prototype.getHeight = function (x, z, noSnow = false, returnOnSnow = f
 
     //If landscape is covered with snow, return height at landscape + snow cover
 	if (GAME_OBJECT_MANAGER.getSnow() && !noSnow) {
-		//snowHeight calculation turned off for now as it seems to be bugged
-		//snowHeight = GAME_OBJECT_MANAGER.getSnow().getHeight(x, z);
+		snowHeight = GAME_OBJECT_MANAGER.getSnow().getHeight(x, z);
 	}
 
 	if (!returnOnSnow) {
@@ -222,10 +221,13 @@ Landscape.prototype.getHeight = function (x, z, noSnow = false, returnOnSnow = f
 		//a number or an array with a number and a flag (on snow or on land).
 		//This ambiguity doesn't spell anything good, but it's a quick solve for
 		//finding out whether player is on snow or not (affects speed).
+
+        //snowHeight calculation turned off for now as it seems to be bugged - both
+		//results return landscape height - still returning like this for speed augment
 		if (landscapeHeight > snowHeight) {
 			return [landscapeHeight, false];
 		} else {
-            return [snowHeight, true];
+            return [landscapeHeight, true];
 		}
 	}
 };

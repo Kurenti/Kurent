@@ -37,10 +37,13 @@ GameState_Load.prototype.update = function (elapsedTime) {
     if (GAME_OBJECT_MANAGER.landscapeLoaded && !this.objectsLoading) {
 
         // Environment objects
+        //////////////////////
+        // Ice sheet
         GAME_OBJECT_MANAGER.add(new Ice([
             38*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
-            6.35,
-            33*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)]));
+            6.35,//6.35,
+            33*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)], 8));
+        // Trees
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/tree.json", [
             30*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
@@ -57,36 +60,56 @@ GameState_Load.prototype.update = function (elapsedTime) {
             32*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
             43*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 3), ObjectTypes.Collidable);
+        // House
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/house.json", [
             29*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
             37*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 4), ObjectTypes.Collidable);
+        // Bell stick
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/stick.json", [
             50*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
             12*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 3), ObjectTypes.Collidable);
 
         //Triggers
-        this.eventFactory.makeEvent([
-            38*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
-            6.35,
-            33*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)],
-            3*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
-            EventType.Ice);
+        //////////
+        // Bell
         this.eventFactory.makeEvent([
             50*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             15,
             12*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)],
             3*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
             EventType.Bell);
+        // Ice
+        this.eventFactory.makeEvent([
+            40.5*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
+            6.35,
+            34.6*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)],
+            3*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
+            EventType.Ice);
+        this.eventFactory.makeEvent([
+                36.5*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
+                6.35,
+                34*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)],
+            4*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
+            EventType.Ice);
+        this.eventFactory.makeEvent([
+                36*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
+                6.35,
+                31.8*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)],
+            3.2*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
+            EventType.Ice);
 
         //Player
+        ////////
+        // Bell
         var bell = new BellObject([
             50.1*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             15,
-            12.1*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0.14)
-        GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS, bell), ObjectTypes.Player);
+            12.1*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0.14);
         GAME_OBJECT_MANAGER.add(bell);
+        // Player
+        GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS, bell), ObjectTypes.Player);
 
         this.objectsLoading = true;
     }
