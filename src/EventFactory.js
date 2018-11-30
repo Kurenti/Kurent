@@ -33,6 +33,8 @@ function EventFactory () {
 
 EventFactory.prototype.makeEvent = function (position, radius, eventType) {
 
-    GAME_OBJECT_MANAGER.add(
-        new Trigger(position, radius, this.eventFunctions[eventType]), ObjectTypes.Collidable);
+    var newTrigger = new Trigger(position, radius, this.eventFunctions[eventType]);
+
+    GAME_OBJECT_MANAGER.add(newTrigger, ObjectTypes.Collidable);
+    return newTrigger;
 };

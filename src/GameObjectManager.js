@@ -12,7 +12,8 @@ var ObjectTypes = {
 	Collidable: 2,
 	Snow: 3,
 	Landscape: 4,
-	Player: 5
+	Villager: 5,
+	Player: 6
 };
 
 function GameObjectManager () {
@@ -31,6 +32,7 @@ function GameObjectManager () {
     this.landscape = false;
     this.snow = false;
     this.player = false;
+    this.villager = false;
 
     //Loader flag
 	this.landscapeLoaded = false;
@@ -53,8 +55,14 @@ GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) 
 		case ObjectTypes.Snow:
 			this.snow = object;
 			break;
+
 		case ObjectTypes.Player:
 			this.player = object;
+			this.collidableObjects.push(object);
+			break;
+
+		case ObjectTypes.Villager:
+			this.villager = object;
 			this.collidableObjects.push(object);
 			break;
 	}
@@ -82,6 +90,10 @@ GameObjectManager.prototype.getPlayer = function () {
     return this.player;
 };
 
+GameObjectManager.prototype.getVillager = function () {
+    return this.villager;
+};
+
 GameObjectManager.prototype.drawAll = function () {
 	this.gameObjects.forEach(function(gameObject) {
 		gameObject.draw();
@@ -96,10 +108,10 @@ GameObjectManager.prototype.updateAll = function (elapsedTime) {
 		}
 	}
 
-	// Then update player - the only truly dynamic object
-	// This was initially a list, but only the villager would be on it next to player
-	// (collidables now have collision restrictions saved)
+	// Then update player and villager - the only truly dynamic objects
+	// there should be a list for these, but with only two this is manageable
 	this.player.update(elapsedTime);
+    this.villager.update(elapsedTime);
 
 	// Reset collision for collidables...can we put
 	// this in objects themselves somehow? At the end of Update?
