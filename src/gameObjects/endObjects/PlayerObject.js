@@ -30,8 +30,14 @@ function PlayerObject (controls, firstBell) {
     this.danceTimes = [ //dance times in sec - ordered by dance power
         2.5, 2.0, 1.0, 1.2
     ];
+
+    this.meltScore = 0.0;
+
     this.bell = firstBell;
     this.bellEquipped = false;
+
+    // Level stages
+    this.stage1 = false;
 
     // Falling in lake
     this.fallenInLake = false;
@@ -85,9 +91,11 @@ PlayerObject.prototype.update = function (elapsedTime) {
         return;
     }
 
+    //For development safety, only interact with snow if it exists
     if (GAME_OBJECT_MANAGER.getSnow()) {
         //Automatic snow melting under feet
         if (this.autoMelting) {
+            //This will not be scored in this state of the game
             GAME_OBJECT_MANAGER.getSnow().meltAt(this.getPosition(), 2, elapsedTime);
         }
 
@@ -112,23 +120,24 @@ PlayerObject.prototype.update = function (elapsedTime) {
                 this.danceTime = 0.0;
             } else {
                 //else DANCE!
-                GAME_OBJECT_MANAGER.getSnow().meltAt(this.getPosition(), this.dancing, elapsedTime);
+                this.meltScore += GAME_OBJECT_MANAGER.getSnow().meltAt(
+                                    this.getPosition(), this.dancing, elapsedTime);
                 this.danceTime += (elapsedTime / 1000); //elapsed time in ms
             }
         }
     } else {
-        //Move whether there's snow or not I guess...
+        //Move whether there is snow or not I guess...
         this.control(elapsedTime);
     }
+
 
     //Check for event proximity
     ///////////////////////////
     // First bell
     if (this.nearBell && this.bestDance === 0) {
-        console.log("I main Alistair");
 
         if (this.controls.interact) {
-            this.bestDance = 2;
+            this.bestDance = 1;
             this.bellEquipped = true;
         }
     }
@@ -140,6 +149,27 @@ PlayerObject.prototype.update = function (elapsedTime) {
     //Control bell
     if (this.bellEquipped) {
         this.bell.update(this.getPosition(), this.getYaw());
+    }
+
+
+    //Scoring
+    /////////
+    // When player melts for 1.6 cube (if standing still and dancing 1 twice,
+    // this reveals first grass) allow dance mark 2
+    if (this.meltScore > 1.6 && this.bestDance === 1) {
+        this.bestDance = 2;
+
+    // Reaching 50 meltScore takes cleaning about half of the starting hill
+    } else if (this.meltScore > 50 && this.bestDance === 2) {
+        this.stage1 = true;
+
+    // To win, reach 300 meltScore (approximately clear the general map area, totally doable)
+    } else if (this.meltScore > 300 && this.bestDance === 4) {
+        console.log("Win I guess");
+    }
+
+    if (this.meltScore >= GAME_OBJECT_MANAGER.getSnow().snowWidth * GAME_OBJECT_MANAGER.getSnow().snowDepth) {
+        console.log("Didn't even think that's possible...");
     }
 
     //Reset interaction flags

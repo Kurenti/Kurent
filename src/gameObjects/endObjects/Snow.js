@@ -25,6 +25,9 @@ Snow.prototype.update = function () {};
 
 Snow.prototype.meltAt = function (position, strength, elapsedTime) {
 
+    var meltScore = 0.0;    //change of 1 equals one melted cubicle
+                            //(plane moved down by thickness that is)
+
     const change = strength*elapsedTime/4000;
     const radius = (Math.ceil(strength) + 0.5)*this.snowCubeWidth;
 
@@ -52,7 +55,10 @@ Snow.prototype.meltAt = function (position, strength, elapsedTime) {
                     if (changedCube.vertices[vert] >
                         GAME_OBJECT_MANAGER.getLandscape().getHeight(vertX, vertZ)
                                 - this.snowThickness / 2.0) {
-                        changedCube.vertices[vert] -= change * (1 - vertDistance / radius);
+                        const vertChange = change * (1 - vertDistance / radius);
+                        changedCube.vertices[vert] -= vertChange;
+                        meltScore += vertChange / (this.snowThickness * 4);
+                        //Melt score should be 1 when 4 vertices move down by this.snowThickness
                     }
                 }
 
@@ -64,6 +70,8 @@ Snow.prototype.meltAt = function (position, strength, elapsedTime) {
             }
         }
     }
+
+    return meltScore;
 };
 
 Snow.prototype.getSnowCubeAt = function (position) {

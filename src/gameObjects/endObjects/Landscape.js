@@ -211,7 +211,8 @@ Landscape.prototype.getHeight = function (x, z, noSnow = false, returnOnSnow = f
 
     //If landscape is covered with snow, return height at landscape + snow cover
 	if (GAME_OBJECT_MANAGER.getSnow() && !noSnow) {
-		snowHeight = GAME_OBJECT_MANAGER.getSnow().getHeight(x, z);
+		//snowHeight calculation turned off for now as it seems to be bugged
+		//snowHeight = GAME_OBJECT_MANAGER.getSnow().getHeight(x, z);
 	}
 
 	if (!returnOnSnow) {
