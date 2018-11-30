@@ -23,7 +23,7 @@ GameState_Pause.prototype.call = function () {
         document.getElementById("buttonResume").style.display = "none";
     } else {
         document.getElementById("deathNote").style.display = "none";
-        document.getElementById("buttonResume").style.display = "block";
+        document.getElementById("buttonResume").style.display = "FLEX";
         document.getElementById("buttonResume").onclick = GAME.toPlaying;
     }
 };
