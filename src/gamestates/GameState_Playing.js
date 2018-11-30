@@ -62,11 +62,17 @@ GameState_Playing.prototype.draw = function () {
 };
 
 GameState_Playing.prototype.handleHints = function() {
+	var displayed = false;
 	for(var i = 0; i < HINTS.intervals.length; i++) {
         if(this.totalTime < HINTS.intervals[i]) {
             this.hintDisplay.style.left = (GRAPHICS.canvas.width / 2 - HINTS.texts[i].length / 2 * 10).toString() + "px";
             this.hintDisplay.innerText = HINTS.texts[i];
+            displayed = true;
             break;
         }
+	}
+	console.log(displayed);
+	if(!displayed) {
+		this.hintDisplay.innerText = "";
 	}
 };
