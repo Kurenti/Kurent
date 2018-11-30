@@ -37,7 +37,7 @@ function PlayerObject (controls, firstBell) {
     this.bellEquipped = false;
 
     // Level stages
-    this.stage1 = false;
+    this.stage1done = false;
 
     // Falling in lake
     this.fallenInLake = false;
@@ -92,6 +92,11 @@ PlayerObject.prototype.update = function (elapsedTime) {
         this.moveInDirection(elapsedTime, 0,0.3);
         this.deathTimer += elapsedTime / 1000; //elapsedTime in ms
 
+        //Drag the bell down with you
+        if (this.bellEquipped) {
+            this.bell.update(this.getPosition(), this.getYaw());
+        }
+
         if (this.deathTimer > 2.0) {
             GAME.toPause();
         }
@@ -136,6 +141,17 @@ PlayerObject.prototype.update = function (elapsedTime) {
         //Move whether there is snow or not I guess...
         this.control(elapsedTime);
     }
+    // Limit position to map
+    if (this.getPosition()[0] < 0) {
+        this.setPosition([0, this.getPosition()[1], this.getPosition()[2]])
+    } else if (this.getPosition()[0] > GAME_OBJECT_MANAGER.getLandscape().landscapeWidth) {
+        this.setPosition([GAME_OBJECT_MANAGER.getLandscape().landscapeWidth, this.getPosition()[1], this.getPosition()[2]])
+    }
+    if (this.getPosition()[2] < 0) {
+        this.setPosition([this.getPosition()[0], this.getPosition()[1], 0])
+    } else if (this.getPosition()[2] > GAME_OBJECT_MANAGER.getLandscape().landscapeDepth) {
+        this.setPosition([this.getPosition()[0], this.getPosition()[1], GAME_OBJECT_MANAGER.getLandscape().landscapeDepth])
+    }
 
 
     //Check for event proximity
@@ -148,7 +164,7 @@ PlayerObject.prototype.update = function (elapsedTime) {
         }
     }
     // Villager
-    if (this.nearVillager && this.bestDance === 2) {
+    if (this.nearVillager && this.bestDance === 2 && this.stage1done) {
         if (this.controls.interact) {
             this.bell.setPosition([
                 this.getPosition()[0],
@@ -174,7 +190,7 @@ PlayerObject.prototype.update = function (elapsedTime) {
 
     // Reaching 50 meltScore takes cleaning about half of the starting hill
     } else if (this.meltScore > 50 && this.bestDance === 2) {
-        this.stage1 = true;
+        this.stage1done = true;
 
     // To win, reach 300 meltScore (approximately clear the general map area, totally doable)
     } else if (this.meltScore > 300 && this.bestDance === 4) {

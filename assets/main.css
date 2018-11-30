@@ -56,6 +56,12 @@ body {
     display: none;
 }
 
+.gameTitle {
+    font-size: 70px;
+    text-align: center;
+    margin-top: 100px;
+}
+
 .menu-item {
 }
 
@@ -79,6 +85,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 350px;
     margin-bottom: 20px;
 }
 .myButton:hover {

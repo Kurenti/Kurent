@@ -24,7 +24,7 @@ function Graphics() {
     this.initShaders();
 
     if (this.gl) {
-	    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);    // Set clear color to black, fully opaque
+	    this.gl.clearColor(0.506, 0.675, 0.843, 1.0);    // Set clear color to murky dark blue
 	    this.gl.clearDepth(1.0);                                    // Clear everything
 	    this.gl.enable(this.gl.DEPTH_TEST);                                // Enable depth testing
 	    this.gl.depthFunc(this.gl.LEQUAL);                                 // Near things obscure far things
