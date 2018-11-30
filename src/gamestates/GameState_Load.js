@@ -99,6 +99,15 @@ GameState_Load.prototype.update = function (elapsedTime) {
                 31.8*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)],
             3.2*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
             EventType.Ice);
+        // Villager trigger (will be immediately moved to villager
+        var villagerTrigger = this.eventFactory.makeEvent([0, 0, 0],
+            4*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth / 64.0),
+            EventType.Villager);
+        // Villager (creates it's own big bell)
+        GAME_OBJECT_MANAGER.add(new Villager([
+            26*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
+            0,
+            34*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], villagerTrigger), ObjectTypes.Villager);
 
         //Player
         ////////
@@ -106,7 +115,9 @@ GameState_Load.prototype.update = function (elapsedTime) {
         var bell = new BellObject([
             50.1*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             15,
-            12.1*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0.14);
+            12.1*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)],
+            0.14,
+            [-0.33, -0.3, 0.0]);
         GAME_OBJECT_MANAGER.add(bell);
         // Player
         GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS, bell), ObjectTypes.Player);

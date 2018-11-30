@@ -142,15 +142,21 @@ PlayerObject.prototype.update = function (elapsedTime) {
     ///////////////////////////
     // First bell
     if (this.nearBell && this.bestDance === 0) {
-
         if (this.controls.interact) {
             this.bestDance = 1;
             this.bellEquipped = true;
         }
     }
     // Villager
-    if (this.nearVillager && this.bestDance < 3) {
-        console.log("Talking to villager");
+    if (this.nearVillager && this.bestDance === 2) {
+        if (this.controls.interact) {
+            this.bell.setPosition([
+                this.getPosition()[0],
+                this.getPosition()[1] - this.objHeight/2.0,
+                this.getPosition()[2]]);
+            this.bestDance = 4;
+            this.bell = GAME_OBJECT_MANAGER.getVillager().looseBell();
+        }
     }
 
     //Control bell
