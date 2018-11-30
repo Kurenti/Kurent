@@ -11,7 +11,8 @@ var ObjectTypes = {
 	Default: 1,
 	Collidable: 2,
 	Snow: 3,
-	Landscape: 4
+	Landscape: 4,
+	Player: 5
 }
 
 function GameObjectManager () {
@@ -29,6 +30,7 @@ function GameObjectManager () {
 	this.collidableObjects = [];
     this.landscape = false;
     this.snow = false;
+    this.player = false;
 
     //Loader flag
 	this.landscapeLoaded = false;
@@ -50,6 +52,10 @@ GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) 
 		case ObjectTypes.Snow:
 			this.snow = object;
 			break;
+		case ObjectTypes.Player:
+			this.player = object;
+			this.collidableObjects.push(object);
+			break;
 	}
 };
 
@@ -68,6 +74,10 @@ GameObjectManager.prototype.getLandscape = function () {
 
 GameObjectManager.prototype.getSnow = function () {
 	return this.snow;
+};
+
+GameObjectManager.prototype.getPlayer = function () {
+    return this.player;
 };
 
 GameObjectManager.prototype.drawAll = function () {

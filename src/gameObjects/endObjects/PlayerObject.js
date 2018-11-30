@@ -22,13 +22,22 @@ function PlayerObject (controls) {
     this.autoMelting = false;
 
     //gameplay variables (proto states...)
-    this.bestDance = 4; //current known best dance - starts with zero (no dances)
+    ////////////////////
+    // Dancing
+    this.bestDance = 0; //current known best dance - starts with zero (no dances)
     this.dancing = 0;   //this is 0 (false) if not dancing or 1-4 according to dance power
     this.danceTime = 0.0;   //current dance time
     this.danceTimes = [ //dance times in sec - ordered by dance power
-        2.5, 2.0, 1.0, 1.0
-    ]
+        2.5, 2.0, 1.0, 1.2
+    ];
+    this.bell = null;   //Set to bell object when received
 
+    // Falling in lake
+    this.fallenInLake = false;
+
+    //Interaction - implemented very unscalably, lack time for more
+    this.nearBell = false;
+    this.nearVillager = false;
 }
 PlayerObject.prototype = new CollidableObject();
 
@@ -66,6 +75,15 @@ PlayerObject.prototype.handleLoadedModel = function (data) {
 };
 
 PlayerObject.prototype.update = function (elapsedTime) {
+
+    //Movement
+    //////////
+    //If dead just drift into lake
+    if (this.fallenInLake) {
+        this.moveInDirection(elapsedTime, 0,0.3);
+        return;
+    }
+
     if (GAME_OBJECT_MANAGER.getSnow()) {
         //Automatic snow melting under feet
         if (this.autoMelting) {
@@ -77,19 +95,22 @@ PlayerObject.prototype.update = function (elapsedTime) {
             //Only move when not dancing
             this.control(elapsedTime);
 
-            //Check if need to start dancing
+            //Check if need to start dancing (only if given dance already unlocked)
             if (this.controls.attack && this.controls.attack <= this.bestDance) {
                 this.dancing = this.controls.attack;
             }
-        //If dancing:
+
+        //Stuff to do while dancing (not much):
         } else {
             //Only rotate and move down
             this.control(elapsedTime, 0);
+
             //Check if done dancing
             if (this.danceTime > this.danceTimes[this.dancing - 1]) {
                 this.dancing = 0;
                 this.danceTime = 0.0;
             } else {
+                //else DANCE!
                 GAME_OBJECT_MANAGER.getSnow().meltAt(this.getPosition(), this.dancing, elapsedTime);
                 this.danceTime += (elapsedTime / 1000); //elapsed time in ms
             }
@@ -98,6 +119,26 @@ PlayerObject.prototype.update = function (elapsedTime) {
         //Move whether there's snow or not I guess...
         this.control(elapsedTime);
     }
+
+    //Check for event proximity
+    ///////////////////////////
+    // First bell
+    if (this.nearBell && this.bestDance === 0) {
+        console.log("I main Alistair");
+    }
+    // Villager
+    if (this.nearVillager && this.bestDance < 3) {
+        console.log("Talking to villager");
+    }
+
+    //Control bell
+    if (this.bell) {
+        this.bell.update(this.getPosition(), this.getYaw());
+    }
+
+    //Reset interaction flags
+    this.nearBell = false;
+    this.nearVillagers = false;
 };
 
 PlayerObject.prototype.control = function (elapsedTime, movementFix = 1) {
@@ -120,21 +161,19 @@ PlayerObject.prototype.controlCamera = function () {
 	var cameraPosition = vec3.fromValues(0.0, 4.0, -7.0);
 	var cameraYaw = 180.0;
 
-	if (!document.getElementById("fixCamera").checked){
-		vec3.rotateY(cameraPosition, cameraPosition,
-					[0.0, 0.0, 0.0], degToRad(this.getYaw()));
+    vec3.rotateY(cameraPosition, cameraPosition,
+                [0.0, 0.0, 0.0], degToRad(this.getYaw()));
 
-		// Move to character
-		vec3.add(cameraPosition, cameraPosition, this.getPosition());
+    // Move to character
+    vec3.add(cameraPosition, cameraPosition, this.getPosition());
 
-		cameraYaw -= this.getYaw();
+    cameraYaw -= this.getYaw();
 
-		// Move on top of terrain if camera is inside terrain
-		const landscapeCameraHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(cameraPosition[0], cameraPosition[2]);
-		if (cameraPosition[1] < landscapeCameraHeight) {
-			cameraPosition[1] = landscapeCameraHeight + 1;
-		}
-	}
+    // Move on top of terrain if camera is inside terrain
+    const landscapeCameraHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(cameraPosition[0], cameraPosition[2]);
+    if (cameraPosition[1] < landscapeCameraHeight) {
+        cameraPosition[1] = landscapeCameraHeight + 1;
+    }
 
 	// Set viewport
 	vec3.negate(cameraPosition, cameraPosition);
@@ -144,140 +183,8 @@ PlayerObject.prototype.controlCamera = function () {
 
 };
 
-PlayerObject.prototype.loadVertices = function () {
-
-    this.vertices = [
-        // Front face
-        -1.0, -1.0,  1.0,
-        1.0, -1.0,  1.0,
-        1.0,  1.0,  1.0,
-        -1.0,  1.0,  1.0,
-
-        // Back face
-        -1.0, -1.0, -1.0,
-        -1.0,  1.0, -1.0,
-        1.0,  1.0, -1.0,
-        1.0, -1.0, -1.0,
-
-        // Top face
-        -1.0,  1.0, -1.0,
-        -1.0,  1.0,  1.0,
-        1.0,  1.0,  1.0,
-        1.0,  1.0, -1.0,
-
-        // Bottom face
-        -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
-        1.0, -1.0,  1.0,
-        -1.0, -1.0,  1.0,
-
-        // Right face
-        1.0, -1.0, -1.0,
-        1.0,  1.0, -1.0,
-        1.0,  1.0,  1.0,
-        1.0, -1.0,  1.0,
-
-        // Left face
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0,  1.0,
-        -1.0,  1.0,  1.0,
-        -1.0,  1.0, -1.0
-    ];
-    this.vertexNormals = [
-        // Front face
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-
-        // Back face
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-
-        // Top face
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-
-        // Bottom face
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-
-        // Right face
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-
-        // Left face
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0
-    ];
-    this.colors = [
-        [1.0, 0.0, 0.0, 1.0], // Front face
-        [1.0, 1.0, 0.0, 1.0], // Back face
-        [0.0, 1.0, 0.0, 1.0], // Top face
-        [1.0, 0.5, 0.5, 1.0], // Bottom face
-        [1.0, 0.0, 1.0, 1.0], // Right face
-        [0.0, 0.0, 1.0, 1.0]  // Left face
-    ];
-    this.textureCoords = [
-        // Front face
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-
-        // Back face
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-
-        // Top face
-        0.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-
-        // Bottom face
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0,
-
-        // Right face
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-
-        // Left face
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0
-    ];
-    this.nVertices = 24;
-
-    this.vertexIndices = [
-        0, 1, 2,      0, 2, 3,    // Front face
-        4, 5, 6,      4, 6, 7,    // Back face
-        8, 9, 10,     8, 10, 11,  // Top face
-        12, 13, 14,   12, 14, 15, // Bottom face
-        16, 17, 18,   16, 18, 19, // Right face
-        20, 21, 22,   20, 22, 23  // Left face
-    ];
-    this.nVertexIndices = 36;
-
-    this.findHeight();
-    this.findRadius();
-    GRAPHICS.loadObjectVertices(this);
+//Function that deals with death - this happens during collision!
+PlayerObject.prototype.fallInLake = function () {
+    console.log("umrl");
+    this.fallenInLake = true;
 };
