@@ -65,14 +65,7 @@ MovableObject.prototype.turn = function (elapsedTime, direction) {
 
 MovableObject.prototype.makeMoveVector = function (elapsedTime, direction = 1) {
 	// Return move vector (movement in given elapsedTime at speed and angle)
-	// direction is forward / backwards / standing still
-
-	if (direction < 0) {
-		direction = -1;
-	}
-	else if (direction > 0) {
-		direction = 1;
-	}
+	// direction can be a speed scaling factor
 
 	return vec3.fromValues(
 			Math.sin(degToRad(this.angle)) * this.speed * elapsedTime * direction / 1000,

@@ -13,6 +13,8 @@ function CollidableObject () {
 	this.freeFallAcceleration = 0.0005;// unit/ms2, fixed
 	this.ySpeed = 0.0; 				  // unit/ms
 
+	this.onSnow = false;	//flag - are we on snow or not
+
 	// Array of vectors of directions in which we can not move
 	// length will be equal to number of objects we are currently
 	// colliding with - usually 1, sometimes 2
@@ -190,8 +192,11 @@ CollidableObject.prototype.move = function (elapsedTime, moveDir = 0) {
 
 
 	//Moved height can return false if something fails
+	//it is called with returnOnSnow flag to true, so this receives an array! Unclean, yeah. Last minute tho.
 	var movedHeight = GAME_OBJECT_MANAGER.getLandscape().getHeight(
-									movedPosition[0], movedPosition[2]) + this.objHeight / 2.0;
+									movedPosition[0], movedPosition[2], false, true);
+	this.onSnow = movedHeight[1];
+	movedHeight = movedHeight[0] + this.objHeight / 2.0;
 	if (movedHeight) {
 		//restrict to free fall acceleration (maxFall should be negative,
 		//freeFallAcceleration is positive and ySpeed is + up!)

@@ -11,13 +11,24 @@ function PlayerObject (controls) {
 
 	this.loadModel("assets/models/kurent.json");
 
-	this.setPosition([(40.0/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth,
+	this.setPosition([40.0*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
                        0.0,
-                      (18.0/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth]);
+                      18.0*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0)]);
 	this.setAngle(120.0);
 	this.setYaw(120.0);
     this.setSpeed(8.0);
     this.setAngularSpeed(100.0);
+
+    this.autoMelting = false;
+
+    //gameplay variables (proto states...)
+    this.bestDance = 4; //current known best dance - starts with zero (no dances)
+    this.dancing = 0;   //this is 0 (false) if not dancing or 1-4 according to dance power
+    this.danceTime = 0.0;   //current dance time
+    this.danceTimes = [ //dance times in sec - ordered by dance power
+        2.5, 2.0, 1.0, 1.0
+    ]
+
 }
 PlayerObject.prototype = new CollidableObject();
 
@@ -56,23 +67,52 @@ PlayerObject.prototype.handleLoadedModel = function (data) {
 
 PlayerObject.prototype.update = function (elapsedTime) {
 
-	this.control(elapsedTime);
-
-	// Gameplay stuff
     if (GAME_OBJECT_MANAGER.getSnow()) {
-        GAME_OBJECT_MANAGER.getSnow().meltAt(this.getPosition(), 2, elapsedTime);
+        //Automatic snow melting under feet
+        if (this.autoMelting) {
+            GAME_OBJECT_MANAGER.getSnow().meltAt(this.getPosition(), 2, elapsedTime);
+        }
+
+        //Cover stuff to do while not dancing
+        if (!this.dancing) {
+            //Only move when not dancing
+            this.control(elapsedTime);
+
+            //Check if need to start dancing
+            if (this.controls.attack && this.controls.attack <= this.bestDance) {
+                this.dancing = this.controls.attack;
+            }
+        //If dancing:
+        } else {
+            //Only rotate and move down
+            this.control(elapsedTime, 0);
+            //Check if done dancing
+            if (this.danceTime > this.danceTimes[this.dancing - 1]) {
+                this.dancing = 0;
+                this.danceTime = 0.0;
+            } else {
+                GAME_OBJECT_MANAGER.getSnow().meltAt(this.getPosition(), this.dancing, elapsedTime);
+                this.danceTime += (elapsedTime / 1000); //elapsed time in ms
+            }
+        }
+    } else {
+        //Move whether there's snow or not I guess...
+        this.control(elapsedTime);
     }
 };
 
-PlayerObject.prototype.control = function (elapsedTime) {
+PlayerObject.prototype.control = function (elapsedTime, movementFix = 1) {
+
+    if (this.onSnow) {
+        //If on snow, move more slowly
+        movementFix = 0.5*movementFix;
+    }
 
 	this.moveInDirection(elapsedTime,
 						 this.controls.yRotation,
-						 this.controls.speed);
+						 this.controls.speed*movementFix);
 
 	this.controlCamera();
-
-	// Other controls follow here
 };
 
 PlayerObject.prototype.controlCamera = function () {

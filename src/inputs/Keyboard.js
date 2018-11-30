@@ -62,20 +62,24 @@ Keyboard.prototype.handleKeys = function() {
     }
 
     // H - attack 1
-    if (this.currentlyPressedKeys["h"]) {
+    if (this.currentlyPressedKeys["1"]) {
         this.attack = 1;
     }
     // J - attack 2
-    else if (this.currentlyPressedKeys["j"]) {
+    else if (this.currentlyPressedKeys["2"]) {
         this.attack = 2;
     }
     // K - attack 3
-    else if (this.currentlyPressedKeys["k"]) {
+    else if (this.currentlyPressedKeys["3"]) {
         this.attack = 3;
     }
     // L - attack 4
-    else if (this.currentlyPressedKeys["l"]) {
+    else if (this.currentlyPressedKeys["4"]) {
         this.attack = 4;
+    }
+    //If no attack button pressed, set attack to 0
+    else {
+        this.attack = 0;
     }
     // Esc - pause
     this.pause = !!this.currentlyPressedKeys["Escape"];

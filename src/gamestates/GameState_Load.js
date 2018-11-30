@@ -32,8 +32,6 @@ GameState_Load.prototype.update = function (elapsedTime) {
 
     //After landscape loaded:
     if (GAME_OBJECT_MANAGER.landscapeLoaded && !this.objectsLoading) {
-        GAME_OBJECT_MANAGER.add(new DevCube([5, 1, 5]), ObjectTypes.Collidable);
-        GAME_OBJECT_MANAGER.add(new DevCube([3, 1, 3]), ObjectTypes.Collidable);
         GAME_OBJECT_MANAGER.add(new Ice([
             38*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
             6.35,

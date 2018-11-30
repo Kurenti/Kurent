@@ -26,9 +26,8 @@ Snow.prototype.update = function () {};
 Snow.prototype.meltAt = function (position, strength, elapsedTime) {
 
     const change = strength*elapsedTime/4000;
-    const radius = (strength + 0.5)*this.snowCubeWidth;
+    const radius = (Math.ceil(strength) + 0.5)*this.snowCubeWidth;
 
-    const changedCubes = [];
     for (var i = 0; i < 2*strength+1; i++) {
         for (var j = 0; j < 2*strength+1; j++) {
 
@@ -58,7 +57,7 @@ Snow.prototype.meltAt = function (position, strength, elapsedTime) {
                 }
 
                 //Recalculate normals
-                var vertexNormals = this.makeNormals(changedCube);
+                this.vertexNormals = this.makeNormals(changedCube);
 
                 //This needs to also move normals in the future
                 GRAPHICS.moveVertices(changedCube.vertexPositionBuffer, changedCube.vertices);
@@ -100,8 +99,8 @@ Snow.prototype.getHeight = function (x, z) {
     var posX = x % (this.snowCubeWidth / 2);
     var posZ = z % (this.snowCubeWidth / 2);
 
-    var dhBYdx = 0;
-    var dhBYdz = 0;
+    //var dhBYdx = 0;
+    //var dhBYdz = 0;
 
     if (posX + posZ < 1) {
         height3 = snowCube.vertices[1];
@@ -109,16 +108,16 @@ Snow.prototype.getHeight = function (x, z) {
         P3z = -this.snowCubeWidth / 2;
 
         //classic interpolation
-        //dhBYdx = P2x - P3x != 0 ? (height2 - height3)/(P2x - P3x) : 0;
-        //dhBYdz = P1x - P3x != 0 ? (height1 - height3)/(P1x - P3x) : 0;
+        //dhBYdx = (height2 - height3)/(P2x - P3x);
+        //dhBYdz = (height1 - height3)/(P1z - P3z);
     } else {
         height3 = snowCube.vertices[7];
         P3x = this.snowCubeWidth / 2;
         P3z = this.snowCubeWidth / 2;
 
         //classic interpolation
-        //dhBYdx = P3x - P1x != 0 ? (height3 - height1)/(P3x - P1x) : 0;
-        //dhBYdz = P3x - P2x != 0 ? (height3 - height2)/(P3x - P2x) : 0;
+        //dhBYdx = (height3 - height1)/(P3x - P1x);
+        //dhBYdz = (height3 - height2)/(P3z - P2z);
     }
 
     //classic interpolation
@@ -133,8 +132,7 @@ Snow.prototype.getHeight = function (x, z) {
                     ((P2z - P3z) * (P1x - P3x) + (P3x - P2x) * (P1z - P3z));
     const weight3 = 1 - weight1 - weight2;
 
-    return ((height1 * weight1) + (height2 * weight2) + (height3 * weight3)) /
-            (weight1 + weight2 + weight3);
+    return ((height1 * weight1) + (height2 * weight2) + (height3 * weight3));
 };
 
 Snow.prototype.spawnSnow = function () {

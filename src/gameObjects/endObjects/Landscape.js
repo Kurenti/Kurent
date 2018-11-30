@@ -148,7 +148,7 @@ Landscape.prototype.handleLandscapeStrip = function (context, k) {
     return moreStrips;
 };
 
-Landscape.prototype.getHeight = function (x, z, noSnow = false) {
+Landscape.prototype.getHeight = function (x, z, noSnow = false, returnOnSnow = false) {
 	//Interpolacija na trikotniku v baricentricnih koordinatah
 
 	if (x < 0 ||
@@ -179,8 +179,8 @@ Landscape.prototype.getHeight = function (x, z, noSnow = false) {
         height3 = this.getPixelHeight(P3x, P3z);
 
         //classic interpolation
-        //dhBYdx = P2x - P3x != 0 ? (height2 - height3)/(P2x - P3x) : 0;
-        //dhBYdz = P1x - P3x != 0 ? (height1 - height3)/(P1x - P3x) : 0;
+        //dhBYdx = (height2 - height3)/(P2x - P3x);
+        //dhBYdz = (height1 - height3)/(P1z - P3z);
 	} else {
 		P3x = Math.ceil(x);
 		P3z = Math.ceil(z);
@@ -191,8 +191,8 @@ Landscape.prototype.getHeight = function (x, z, noSnow = false) {
         height3 = this.getPixelHeight(P3x, P3z);
 
         //classic interpolation
-        //dhBYdx = P3x - P1x != 0 ? (height3 - height1)/(P3x - P1x) : 0;
-        //dhBYdz = P3x - P2x != 0 ? (height3 - height2)/(P3x - P2x) : 0;
+        //dhBYdx = (height3 - height1)/(P3x - P1x);
+        //dhBYdz = (height3 - height2)/(P3z - P2z);
 	}
 
     //classic interpolation
@@ -217,7 +217,19 @@ Landscape.prototype.getHeight = function (x, z, noSnow = false) {
 		snowHeight = GAME_OBJECT_MANAGER.getSnow().getHeight(x, z);
 	}
 
-	return Math.max(landscapeHeight, snowHeight);
+	if (!returnOnSnow) {
+        return Math.max(landscapeHeight, snowHeight);
+    } else {
+		//ok, here is an offense to cleanliness...this function can either return
+		//a number or an array with a number and a flag (on snow or on land).
+		//This ambiguity doesn't spell anything good, but it's a quick solve for
+		//finding out whether player is on snow or not (affects speed).
+		if (landscapeHeight > snowHeight) {
+			return [landscapeHeight, false];
+		} else {
+            return [snowHeight, true];
+		}
+	}
 };
 
 Landscape.prototype.getPixelHeight = function (x, z) {
