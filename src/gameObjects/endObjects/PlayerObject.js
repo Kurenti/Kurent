@@ -66,7 +66,6 @@ PlayerObject.prototype.handleLoadedModel = function (data) {
 };
 
 PlayerObject.prototype.update = function (elapsedTime) {
-
     if (GAME_OBJECT_MANAGER.getSnow()) {
         //Automatic snow melting under feet
         if (this.autoMelting) {

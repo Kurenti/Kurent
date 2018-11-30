@@ -60,7 +60,10 @@ GameState_Load.prototype.update = function (elapsedTime) {
             50*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
             12*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 3), ObjectTypes.Collidable);
-        GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS), ObjectTypes.Collidable);
+
+        var playerObject = new PlayerObject(CONTROLS);
+        GAME_OBJECT_MANAGER.add(playerObject, ObjectTypes.Collidable);
+        GAME_OBJECT_MANAGER.add(new BellObject([50, 15, 13], playerObject), ObjectTypes.Default);
 
         this.objectsLoading = true;
     }
