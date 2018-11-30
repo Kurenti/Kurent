@@ -13,9 +13,13 @@ parser.add_argument("-in", "--inputFile", action = "store", type = str, \
 		 			default = "kurent.obj", help = "Input .obj file")
 parser.add_argument("-out", "--outputFile", action = "store", type = str, \
 		 			default = "0", help = "Output .json file")
+parser.add_argument("-s", "--scale", action = "store", type = float, \
+		 			default = "1", help = "Scale original model to")
 args = parser.parse_args()
 inFile  = args.inputFile
 outFile = args.outputFile
+scale = args.scale
+#scale shouldn't be changed here but in javascript when importing
 
 #If outFile stays default change it to same as input file
 if outFile == "0":
@@ -49,7 +53,7 @@ with open(inFile, "r") as inOBJ, open(outFile, "w") as outJSON:
 			vertexNormals.append([float(x) for x in line.split()[1:]]);
 
 		elif line[0] == "v":
-			vertices.append([float(x) for x in line.split()[1:]]);
+			vertices.append([float(x)*scale for x in line.split()[1:]]);
 
 		#If during faces reach a "usemtl" line, increment the color index we will
 		#be adding vertices to. It would make sense to fill a modelData["colors"]
