@@ -13,6 +13,8 @@ function Keyboard() {
     this.yRotation = 0;
     // Attack is denoted by number of attack (1, 2, 3, 4)
     this.attack = 0;
+    // Interacting
+    this.interact = 0;
     // Flag that tells if pause button was pressed
     this.pause = false;
 }
@@ -81,6 +83,14 @@ Keyboard.prototype.handleKeys = function() {
     else {
         this.attack = 0;
     }
+
+    // E - interact
+    if (this.currentlyPressedKeys["e"]) {
+        this.interact = 1;
+    } else {
+        this.interact = 0;
+    }
+
     // Esc - pause
     this.pause = !!this.currentlyPressedKeys["Escape"];
 };

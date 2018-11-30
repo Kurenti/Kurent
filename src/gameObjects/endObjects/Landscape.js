@@ -20,9 +20,6 @@ Landscape.prototype.draw = function () {
 	});
 };
 
-// Improve GameObjectManager so as not to need this
-Landscape.prototype.update = function () {};
-
 // Conundrum: inherit from VisibleObject and have a bunch of unused vars and arrays for drawing
 // (Landscape itself is not a drawable object, it implements its own .draw) or just copy
 // .loadModel from VisibleObject?

@@ -13,11 +13,12 @@ var ObjectTypes = {
 	Snow: 3,
 	Landscape: 4,
 	Player: 5
-}
+};
 
 function GameObjectManager () {
 
-	this.gameObjects = [];
+	this.gameObjects = [];	//Drawables
+    this.collidableObjects = []; //Collidables
 
 	// Da bi bila stvar res clean, bi bil this.gameObjects dict (oziroma
 	// locen dict this.namedGameObjects za named objekte),
@@ -27,7 +28,6 @@ function GameObjectManager () {
 	// this.kurent itd.
 	// Ce se jih nabere, se pac naredi en dict z resnimi named objekti
 
-	this.collidableObjects = [];
     this.landscape = false;
     this.snow = false;
     this.player = false;
@@ -38,6 +38,7 @@ function GameObjectManager () {
 }
 
 GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) {
+
 	this.gameObjects.push(object);
 
 	switch(type) {
@@ -62,6 +63,7 @@ GameObjectManager.prototype.add = function (object, type = ObjectTypes.Default) 
 GameObjectManager.prototype.empty = function () {
     this.gameObjects = [];
     this.collidableObjects = [];
+    this.dynamicObjects = [];
     this.landscape = false;
     this.snow = false;
     this.landscapeLoaded = false;
@@ -94,11 +96,10 @@ GameObjectManager.prototype.updateAll = function (elapsedTime) {
 		}
 	}
 
-	// Then update all objects (collidables now have
-	// collision restrictions saved)
-	this.gameObjects.forEach(function(gameObject) {
-		gameObject.update(elapsedTime);
-	});
+	// Then update player - the only truly dynamic object
+	// This was initially a list, but only the villager would be on it next to player
+	// (collidables now have collision restrictions saved)
+	this.player.update(elapsedTime);
 
 	// Reset collision for collidables...can we put
 	// this in objects themselves somehow? At the end of Update?

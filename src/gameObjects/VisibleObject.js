@@ -107,10 +107,6 @@ VisibleObject.prototype.getYaw = function () {
 	return this.yaw;
 };
 
-VisibleObject.prototype.update = function (elapsedTime) {
-	// To be overriden in children
-};
-
 VisibleObject.prototype.draw = function (elapsedTime) {
 	GRAPHICS.drawObject(this);
 };

@@ -3,19 +3,35 @@
 // Bell that is appended to our Kurent
 /////////////////////////////////////
 
-function BellObject (startingPosition, playerObject) {
-    this.playerObject = playerObject;
-    this.scale = 0.05;
-    this.attached = true;
+function BellObject (startingPosition, scale) {
+    this.scale = scale;
     this.loadVertices();
 
     this.setPosition(startingPosition);
-    this.setSpeed(this.playerObject.speed);
-    this.setAngularSpeed(this.playerObject.angularSpeed);
-    this.setAngle(this.playerObject.angle);
-    this.setYaw(this.playerObject.yaw);
+    this.setYaw(0.0);
 }
-BellObject.prototype = new MovableObject();
+BellObject.prototype = new VisibleObject();
+
+//This update is called by PlayerObject
+BellObject.prototype.update = function (playerPosition, playerYaw) {
+
+    // Set up relative position of camera and rotate around player by yaw
+    var bellPosition = vec3.fromValues(-0.33, -0.3, 0.0);
+    var bellYaw = 0.0;
+
+    // Rotate around belt
+    vec3.rotateY(bellPosition, bellPosition,
+        [0.0, 0.0, 0.0], degToRad(playerYaw));
+
+    // Move to character
+    vec3.add(bellPosition, bellPosition, playerPosition);
+
+    bellYaw += playerYaw;
+
+    this.setPosition(bellPosition);
+    this.setYaw(bellYaw);
+
+};
 
 BellObject.prototype.loadVertices = function () {
 
@@ -155,21 +171,4 @@ BellObject.prototype.loadVertices = function () {
     }.bind(this));
 
     GRAPHICS.loadObjectVertices(this);
-};
-
-BellObject.prototype.update = function (elapsedTime) {
-    if(this.attached) {
-        this.setPosition([this.playerObject.position[0] + 1, this.playerObject.position[1], this.playerObject.position[2] + 1]);
-        this.setAngle(this.playerObject.angle);
-        this.setYaw(this.playerObject.yaw);
-    }
-    console.log(this.position);
-};
-
-BellObject.prototype.attach = function() {
-  this.attached = true;
-};
-
-BellObject.prototype.unattach = function() {
-  this.attached = false;
 };

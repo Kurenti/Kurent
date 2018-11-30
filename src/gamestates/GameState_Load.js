@@ -81,8 +81,12 @@ GameState_Load.prototype.update = function (elapsedTime) {
             EventType.Bell);
 
         //Player
-        GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS), ObjectTypes.Player);
-        GAME_OBJECT_MANAGER.add(new BellObject([50, 15, 13], null));
+        var bell = new BellObject([
+            50.1*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
+            15,
+            12.1*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0.14)
+        GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS, bell), ObjectTypes.Player);
+        GAME_OBJECT_MANAGER.add(bell);
 
         this.objectsLoading = true;
     }

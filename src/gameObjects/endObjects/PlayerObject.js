@@ -3,7 +3,7 @@
 // A controllable player object
 ///////////////////////////////
 
-function PlayerObject (controls) {
+function PlayerObject (controls, firstBell) {
 	this.controls = controls;
 
 	//Scale to original model - this is used on load, not when drawing
@@ -30,7 +30,8 @@ function PlayerObject (controls) {
     this.danceTimes = [ //dance times in sec - ordered by dance power
         2.5, 2.0, 1.0, 1.2
     ];
-    this.bell = null;   //Set to bell object when received
+    this.bell = firstBell;
+    this.bellEquipped = false;
 
     // Falling in lake
     this.fallenInLake = false;
@@ -125,6 +126,11 @@ PlayerObject.prototype.update = function (elapsedTime) {
     // First bell
     if (this.nearBell && this.bestDance === 0) {
         console.log("I main Alistair");
+
+        if (this.controls.interact) {
+            this.bestDance = 2;
+            this.bellEquipped = true;
+        }
     }
     // Villager
     if (this.nearVillager && this.bestDance < 3) {
@@ -132,7 +138,7 @@ PlayerObject.prototype.update = function (elapsedTime) {
     }
 
     //Control bell
-    if (this.bell) {
+    if (this.bellEquipped) {
         this.bell.update(this.getPosition(), this.getYaw());
     }
 
