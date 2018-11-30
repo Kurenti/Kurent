@@ -71,7 +71,6 @@ GameState_Playing.prototype.handleHints = function() {
             break;
         }
 	}
-	console.log(displayed);
 	if(!displayed) {
 		this.hintDisplay.innerText = "";
 	}
