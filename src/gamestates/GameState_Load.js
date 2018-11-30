@@ -33,30 +33,34 @@ GameState_Load.prototype.update = function (elapsedTime) {
     if (GAME_OBJECT_MANAGER.landscapeLoaded && !this.objectsLoading) {
         GAME_OBJECT_MANAGER.add(new DevCube([5, 1, 5]), ObjectTypes.Collidable);
         GAME_OBJECT_MANAGER.add(new DevCube([3, 1, 3]), ObjectTypes.Collidable);
+        GAME_OBJECT_MANAGER.add(new Ice([
+            38*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64),
+            6.35,
+            33*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64)]));
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/tree.json", [
-            (30/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth,
+            30*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
-            (30/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeDepth], 0, 2), ObjectTypes.Collidable);
+            30*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 2), ObjectTypes.Collidable);
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/tree.json", [
-            (31/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth,
+            31*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
-            (31/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeDepth], 0, 3), ObjectTypes.Collidable);
+            31*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 3), ObjectTypes.Collidable);
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/tree.json", [
-            (34/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth,
+            34*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
-            (40/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeDepth], 0, 3), ObjectTypes.Collidable);
+            40*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 3), ObjectTypes.Collidable);
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/stump.json", [
-            (32/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth,
+            32*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
-            (43/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeDepth], 0, 3), ObjectTypes.Collidable);
+            43*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 3), ObjectTypes.Collidable);
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/house.json", [
-            (29/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth,
+            29*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
-            (37/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeDepth], 0, 4), ObjectTypes.Collidable);
+            37*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 4), ObjectTypes.Collidable);
         GAME_OBJECT_MANAGER.add(new GenericObject("assets/models/stick.json", [
-            (50/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeWidth,
+            50*(GAME_OBJECT_MANAGER.getLandscape().landscapeWidth/64.0),
             0,
-            (12/64.0)*GAME_OBJECT_MANAGER.getLandscape().landscapeDepth], 0, 3), ObjectTypes.Collidable);
+            12*(GAME_OBJECT_MANAGER.getLandscape().landscapeDepth/64.0)], 0, 3), ObjectTypes.Collidable);
         GAME_OBJECT_MANAGER.add(new PlayerObject(CONTROLS), ObjectTypes.Collidable);
 
         this.objectsLoading = true;

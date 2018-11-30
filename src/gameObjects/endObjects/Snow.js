@@ -126,12 +126,6 @@ Snow.prototype.getHeight = function (x, z) {
 
     //Implementirano interpoliranje z baricentricnimi koordinatami
 
-    //Do not divide by 0
-    if (((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z)) === 0 ||
-        ((P2z - P3z)*(P1x - P3x) + (P3x - P2x)*(P1z - P3z)) === 0) {
-        return false;
-    }
-
     //This will always result in a float, as x and z are floats (also, division)
     const weight1 = ((P2z - P3z) * (posX - P3x) + (P3x - P2x) * (posZ - P3z)) /
                     ((P2z - P3z) * (P1x - P3x) + (P3x - P2x) * (P1z - P3z));
@@ -209,14 +203,14 @@ Snow.prototype.makeSnowCubicle = function (position, width) {
 };
 
 Snow.prototype.makeNormals = function (snowCubicle) {
-    const width = this.snowCubeWidth / 2.0;
+    const width = this.snowCubeWidth;
 
     var normalTL = vec3.create();   //top-left
     var normalBR = vec3.create();   //bot-right
-    vec3.cross(normalTL, vec3.fromValues(0.0,snowCubicle.vertices[4] - snowCubicle.vertices[1], width*2.0),
-                         vec3.fromValues(width*2.0, snowCubicle.vertices[10] - snowCubicle.vertices[1], 0.0));
-    vec3.cross(normalBR, vec3.fromValues(0.0, snowCubicle.vertices[16] - snowCubicle.vertices[7], width*2.0),
-                         vec3.fromValues(width*2.0, snowCubicle.vertices[13] - snowCubicle.vertices[7], 0.0));
+    vec3.cross(normalTL, vec3.fromValues(0.0,snowCubicle.vertices[4] - snowCubicle.vertices[1], width),
+                         vec3.fromValues(width, snowCubicle.vertices[10] - snowCubicle.vertices[1], 0.0));
+    vec3.cross(normalBR, vec3.fromValues(0.0, snowCubicle.vertices[16] - snowCubicle.vertices[7], width),
+                         vec3.fromValues(width, snowCubicle.vertices[13] - snowCubicle.vertices[7], 0.0));
     vec3.normalize(normalTL, normalTL);
     vec3.normalize(normalBR, normalBR);
     var vertexNormals = [];
