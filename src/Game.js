@@ -45,8 +45,6 @@ Game.prototype.start = function () {
         }.bind(this), 16);
     }
 
-    //This is to be moved somewhere more appropriate:
-    //CONTROLS.removeListener();
 };
 
 Game.prototype.gameLoop = function () {

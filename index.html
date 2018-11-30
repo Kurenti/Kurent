@@ -38,6 +38,9 @@
                 <a class="myButton" id="buttonExitToMenu">Exit to menu</a>
             </div>
         </div>
+
+        <div id="hints">
+        </div>
     </div>
 
     <p class="signature">
@@ -118,7 +121,7 @@ quite a bit -->
 
     void main(void) {
         uAmbientColor = vec3(0.2, 0.2, 0.2);
-        uLightingDirection = vec3(1.0, 1.0, 1.0);
+        uLightingDirection = vec3(0.0, 1.0, 1.0);
         uDirectionalColor = vec3(0.8, 0.8, 0.8);
 
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
